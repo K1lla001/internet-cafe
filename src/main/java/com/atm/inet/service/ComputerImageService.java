@@ -6,7 +6,15 @@ import com.atm.inet.entity.computer.Type;
 import com.atm.inet.model.request.ComputerRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface ComputerImageService {
     ComputerImage create(Type request, MultipartFile multipartFile);
+
+    ComputerImage findById(String id);
+
+    String deleteById(String id);
+
+    void deleteAll(List<ComputerImage> imageList);
 
 }

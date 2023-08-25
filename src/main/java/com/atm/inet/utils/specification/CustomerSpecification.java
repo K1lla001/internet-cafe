@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerSpecification {
-
     public static Specification<Customer> getSpecification(CustomerSearch customerSearch){
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
@@ -21,7 +20,7 @@ public class CustomerSpecification {
                 Predicate lastName = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + customerSearch.getCustomerLastName().toLowerCase() + "%");
                 predicateList.add(lastName);
             }
-            Predicate[] predicates = predicateList.toArray(new Predicate[predicateList.size()]);
+            Predicate[] predicates = predicateList.toArray(new Predicate[0]);
             return criteriaBuilder.and(predicates);
         };
     }

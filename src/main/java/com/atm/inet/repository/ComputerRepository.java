@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ComputerRepository extends JpaRepository<Computer, String>, JpaSpecificationExecutor<Computer> {
+public interface ComputerRepository extends JpaRepository<Computer, String>, JpaSpecificationExecutor<Computer>{
 }

@@ -34,11 +34,11 @@ public class CustomerController {
                 .customerLastName(lastName)
                 .build();
         Pageable pageable = PageRequest.of(pageNumber, size);
-        Page<CustomerResponse> customers = customerService.getCustomerPerPage(pageable, dataCustomer);
+        Page<CustomerResponse> pageableResponse = customerService.getCustomerPerPage(pageable, dataCustomer);
 
         PagingResponse pagingResponse = PagingResponse.builder()
-                .count(customers.getTotalElements())
-                .totalPages(customers.getTotalPages())
+                .count(pageableResponse.getTotalElements())
+                .totalPages(pageableResponse.getTotalPages())
                 .page(pageNumber)
                 .size(size)
                 .build();
@@ -47,7 +47,7 @@ public class CustomerController {
                 CommonResponse.builder()
                         .statusCode(HttpStatus.OK.value())
                         .message("Successfully Get Data Per Page!")
-                        .data(customers.getContent())
+                        .data(pageableResponse.getContent())
                         .pagingResponse(pagingResponse)
                         .build()
         );

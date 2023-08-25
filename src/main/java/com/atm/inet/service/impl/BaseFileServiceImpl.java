@@ -2,6 +2,7 @@ package com.atm.inet.service.impl;
 
 import com.atm.inet.entity.BaseFile;
 import com.atm.inet.service.BaseFileService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class BaseFileServiceImpl implements BaseFileService {
 
     @Value("${icafe.image-path-url}")
@@ -51,11 +53,6 @@ public class BaseFileServiceImpl implements BaseFileService {
     }
 
     @Override
-    public List<BaseFile> createBulk(List<MultipartFile> multipartFiles) {
-        return multipartFiles.stream().map(this::create).collect(Collectors.toList());
-    }
-
-    @Override
     public Resource get(String path) {
         Path filePath = Paths.get(path);
         try {
@@ -68,12 +65,25 @@ public class BaseFileServiceImpl implements BaseFileService {
     public void delete(String path) {
         try {
             Path filePath = Paths.get(path);
-            boolean exists = Files.deleteIfExists(filePath);
-            if (!exists) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "file tidak ditemukan");
-        } catch (IOException | RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "terjadi kegagalan server");
+            log.info("Deleting file: {}", filePath);
+
+            boolean deleted = Files.deleteIfExists(filePath);
+
+            if (deleted) {
+                log.info("File deleted: {}", filePath);
+            } else {
+                log.warn("File not found: {}", filePath);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
+            }
+        } catch (IOException e) {
+            log.error("Failed to delete file: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete file");
+        } catch (RuntimeException e) {
+            log.error("Internal error: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
+
 
 
 }

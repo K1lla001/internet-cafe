@@ -1,7 +1,9 @@
 package com.atm.inet.service.impl;
 
+import com.atm.inet.entity.Customer;
 import com.atm.inet.entity.computer.*;
 import com.atm.inet.entity.constant.ECategory;
+import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.request.ComputerRequest;
 import com.atm.inet.model.response.*;
 import com.atm.inet.repository.ComputerRepository;
@@ -9,7 +11,12 @@ import com.atm.inet.service.ComputerImageService;
 import com.atm.inet.service.ComputerService;
 import com.atm.inet.service.ComputerSpecService;
 import com.atm.inet.service.TypeService;
+import com.atm.inet.utils.specification.ComputerSpecification;
+import com.atm.inet.utils.specification.CustomerSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,14 +79,10 @@ public class ComputerServiceImpl implements ComputerService {
     }
 
     @Override
-    public List<ComputerResponse> getAll() {
-        List<Computer> computers = computerRepository.findAll();
-        List<ComputerResponse> computerResponses = new ArrayList<>();
-
-        computers.forEach(computer ->
-                computerResponses.add(generateComputerResponse(computer))
-        );
-        return computerResponses;
+    public Page<ComputerResponse> getAll(Pageable pageable, ComputerSearch computerSearch) {
+        Specification<Computer> computerSpecification = ComputerSpecification.getSpecification(computerSearch);
+        Page<Computer> computers = computerRepository.findAll(computerSpecification, pageable);
+        return computers.map(this::generateComputerResponse);
     }
 
     @Override
@@ -91,11 +94,8 @@ public class ComputerServiceImpl implements ComputerService {
     @Override
     public String deleteById(String id) {
         Computer computer = getComputerById(id);
-        computer.setStatus(false);
-        for (TypePrice typePrice : computer.getType().getTypePrices()) {
-            typePrice.setIsActive(false);
-        }
-        computerRepository.save(computer);
+        computerImageService.deleteAll(computer.getType().getComputerImages());
+        computerRepository.delete(computer);
         return id;
     }
 
