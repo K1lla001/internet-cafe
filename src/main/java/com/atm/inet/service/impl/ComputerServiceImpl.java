@@ -88,6 +88,17 @@ public class ComputerServiceImpl implements ComputerService {
        return generateComputerResponse(computer);
     }
 
+    @Override
+    public String deleteById(String id) {
+        Computer computer = getComputerById(id);
+        computer.setStatus(false);
+        for (TypePrice typePrice : computer.getType().getTypePrices()) {
+            typePrice.setIsActive(false);
+        }
+        computerRepository.save(computer);
+        return id;
+    }
+
     private Computer getComputerById(String id) {
         return computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
     }
@@ -113,6 +124,7 @@ public class ComputerServiceImpl implements ComputerService {
                 .name(computer.getName())
                 .code(computer.getCode())
                 .type(typeResponse)
+                .status(computer.getStatus())
                 .specification(computer.getSpecification())
                 .build();
     }

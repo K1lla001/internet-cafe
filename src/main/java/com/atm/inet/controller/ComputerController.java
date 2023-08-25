@@ -62,4 +62,16 @@ public class ComputerController {
         );
     }
 
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<CommonResponse<String>> deleteById(@PathVariable String id){
+        String deletedEntity = computerService.deleteById(id);
+        return ResponseEntity.ok(
+                CommonResponse.<String>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully delete data!")
+                        .data(deletedEntity)
+                        .build()
+        );
+    }
+
 }

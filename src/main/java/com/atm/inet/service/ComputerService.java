@@ -15,6 +15,8 @@ public interface ComputerService {
 
     ComputerResponse getById(String id);
 
+    String deleteById(String id);
+
 
 
 }
