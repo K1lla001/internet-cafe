@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 
@@ -13,6 +14,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ComputerRequest {
+
+    private @Nullable String id;
+
     @NotBlank(message = "name can not be empty")
     private String name;
     @NotBlank(message = "pc_code can not be empty")

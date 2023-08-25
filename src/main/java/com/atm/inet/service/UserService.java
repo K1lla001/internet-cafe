@@ -4,7 +4,6 @@ package com.atm.inet.service;
 import com.atm.inet.entity.UserCredential;
 import com.atm.inet.model.response.FileResponse;
 import com.atm.inet.model.response.UserResponse;
-import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
