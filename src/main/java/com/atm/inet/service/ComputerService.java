@@ -13,6 +13,8 @@ public interface ComputerService {
 
     List<ComputerResponse> getAll();
 
+    ComputerResponse getById(String id);
+
 
 
 }

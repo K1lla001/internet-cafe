@@ -16,6 +16,6 @@ public class ComputerResponse {
     private String name;
     private String code;
     private TypeResponse type;
-    private ComputerSpec computerSpecResponse;
+    private ComputerSpec specification;
 
 }

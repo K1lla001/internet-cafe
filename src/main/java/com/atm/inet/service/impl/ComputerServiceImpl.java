@@ -82,7 +82,13 @@ public class ComputerServiceImpl implements ComputerService {
         return computerResponses;
     }
 
-    private Computer getOriginalComputerById(String id) {
+    @Override
+    public ComputerResponse getById(String id) {
+        Computer computer = getComputerById(id);
+       return generateComputerResponse(computer);
+    }
+
+    private Computer getComputerById(String id) {
         return computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
     }
 
@@ -98,8 +104,8 @@ public class ComputerServiceImpl implements ComputerService {
         TypeResponse typeResponse = TypeResponse.builder()
                 .id(computer.getType().getId())
                 .category(computer.getType().getCategory().name())
-                .typePriceResponses(priceResponses)
-                .imageList(generateFileResponse(computer.getType()))
+                .prices(priceResponses)
+                .images(generateFileResponse(computer.getType()))
                 .build();
 
         return ComputerResponse.builder()
@@ -107,7 +113,7 @@ public class ComputerServiceImpl implements ComputerService {
                 .name(computer.getName())
                 .code(computer.getCode())
                 .type(typeResponse)
-                .computerSpecResponse(computer.getSpecification())
+                .specification(computer.getSpecification())
                 .build();
     }
 

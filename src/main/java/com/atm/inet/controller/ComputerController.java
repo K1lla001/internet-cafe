@@ -50,4 +50,16 @@ public class ComputerController {
         );
     }
 
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<CommonResponse<ComputerResponse>> getById(@PathVariable String id){
+        ComputerResponse response = computerService.getById(id);
+        return ResponseEntity.ok(
+                CommonResponse.<ComputerResponse>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully get data!")
+                        .data(response)
+                        .build()
+        );
+    }
+
 }
