@@ -1,19 +1,18 @@
 package com.atm.inet.service.impl;
 
-import com.atm.inet.dto.request.AuthRequest;
-import com.atm.inet.dto.response.LoginResponse;
-import com.atm.inet.dto.response.RegisterResponse;
-import com.atm.inet.entity.Admin;
-import com.atm.inet.entity.Role;
-import com.atm.inet.entity.UserCredential;
-import com.atm.inet.entity.UserDetailsImpl;
+import com.atm.inet.entity.*;
 import com.atm.inet.entity.constant.ERole;
+import com.atm.inet.model.request.AuthRequest;
+import com.atm.inet.model.response.LoginResponse;
+import com.atm.inet.model.response.RegisterResponse;
 import com.atm.inet.repository.UserCredentialRepository;
 import com.atm.inet.security.JwtSecurityConfig;
 import com.atm.inet.service.AdminService;
 import com.atm.inet.service.AuthService;
+import com.atm.inet.service.CustomerService;
 import com.atm.inet.service.RoleService;
 import com.atm.inet.utils.BcryptUtil;
+import com.atm.inet.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -39,6 +38,8 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final JwtSecurityConfig jwtSecurityConfig;
     private final AuthenticationManager authenticationManager;
+    private final ValidationUtil validationUtil;
+    private final CustomerService customerService;
 
     @Override
     public RegisterResponse registerAdmin(AuthRequest request) {
@@ -58,6 +59,31 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User Already Exist!");
         }
     }
+
+    @Override
+    public RegisterResponse registerCustomer(AuthRequest request) {
+        validationUtil.validate(request);
+        try {
+            Role customer = roleService.getOrSave(ERole.ROLE_CUSTOMER);
+            UserCredential userCredential = createUserCredential(request, customer);
+
+            Customer currentCustomer = Customer.builder()
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .email(request.getEmail())
+                    .phoneNumber(request.getPhoneNumber())
+                    .isMember(false)
+                    .userCredential(userCredential)
+                    .build();
+
+            customerService.addCustomer(currentCustomer);
+            return RegisterResponse.builder()
+                    .email(currentCustomer.getEmail()).build();
+        }catch (DataIntegrityViolationException exception){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User Already Exist!");
+        }
+    }
+
     @Override
     public LoginResponse login(AuthRequest request) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

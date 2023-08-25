@@ -11,10 +11,10 @@ import java.util.Date;
 @Slf4j
 public class JwtSecurityConfig {
 
-    @Value("${icafe.jwt-secret}")
+    @Value("${inet.jwt-secret}")
     private String jwtSecret;
 
-    @Value("${icafe.jwt-expiration}")
+    @Value("${inet.jwt-expiration}")
     private Long jwtExpired;
 
     public String getEmailByToken(String token){

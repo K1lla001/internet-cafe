@@ -1,4 +1,4 @@
-package com.atm.inet.entity;
+package com.atm.inet.entity.computer;
 
 
 import com.atm.inet.entity.constant.ECategory;

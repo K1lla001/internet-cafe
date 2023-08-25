@@ -29,6 +29,8 @@ public class UserCredential {
 
     @NotNull(message = "Password Can Not Be Empty")
     private String password;
+    private Boolean isActive;
+
 
     @OneToOne
     @JoinColumn(name = "role_id")

@@ -1,4 +1,4 @@
-package com.atm.inet.dto.response;
+package com.atm.inet.model.response;
 
 import lombok.Builder;
 import lombok.Data;

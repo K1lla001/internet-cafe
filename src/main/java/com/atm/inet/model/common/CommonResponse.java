@@ -1,4 +1,4 @@
-package com.atm.inet.dto.common;
+package com.atm.inet.model.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +13,6 @@ public class CommonResponse<T> {
     private Integer statusCode;
     private String message;
     private T data;
+    private PagingResponse pagingResponse;
 }
 
