@@ -14,6 +14,7 @@ import com.atm.inet.service.RoleService;
 import com.atm.inet.utils.BcryptUtil;
 import com.atm.inet.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,31 +27,35 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
     private final UserCredentialRepository userCredentialRepository;
     private final BcryptUtil bcryptUtil;
     private final AdminService adminService;
+    private final CustomerService customerService;
     private final RoleService roleService;
     private final JwtSecurityConfig jwtSecurityConfig;
     private final AuthenticationManager authenticationManager;
     private final ValidationUtil validationUtil;
-    private final CustomerService customerService;
 
     @Override
     public RegisterResponse registerAdmin(AuthRequest request) {
+        validationUtil.validate(request);
         try {
             Role admin = roleService.getOrSave(ERole.ROLE_ADMIN);
             UserCredential userCredential = createUserCredential(request, admin);
 
             Admin currentAdmin = Admin.builder()
-                    .email(request.getEmail())
                     .fullName(defaultNameGenerator(request.getEmail()))
+                    .email(request.getEmail())
                     .userCredential(userCredential)
+
                     .build();
 
             adminService.create(currentAdmin);
@@ -73,6 +78,7 @@ public class AuthServiceImpl implements AuthService {
                     .email(request.getEmail())
                     .phoneNumber(request.getPhoneNumber())
                     .isMember(false)
+                    .isDeleted(false)
                     .userCredential(userCredential)
                     .build();
 
@@ -86,22 +92,38 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(AuthRequest request) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getEmail(), request.getPassword()
-        ));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
-        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        validationUtil.validate(request);
 
-        String currentRole = "";
-        if(!roles.isEmpty()) currentRole = roles.get(0);
+        Optional<UserCredential> userEmail = userCredentialRepository.findByEmail(request.getEmail());
+        if (userEmail.isEmpty() || !userEmail.get().getIsActive()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    ("Account not active or incorrect Email!"));
+        }
+        try {
+            Authentication authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                    request.getEmail(), request.getPassword()
+            ));
+            log.info("INFO DARI LOGIN", authenticate.getPrincipal().toString());
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+            UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
+            List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-        String jwtToken = jwtSecurityConfig.generateToken(user.getEmail());
-        return LoginResponse.builder()
-                .email(user.getEmail())
-                .role(currentRole)
-                .token(jwtToken)
-                .build();
+            String currentRole = "";
+            if (!roles.isEmpty()) {
+                currentRole = roles.get(0);
+            }
+
+            String jwtToken = jwtSecurityConfig.generateToken(user.getEmail());
+            return LoginResponse.builder()
+                    .email(user.getEmail())
+                    .role(currentRole)
+                    .token(jwtToken)
+                    .build();
+        }catch (Exception exception){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect Email or Password!");
+        }
+
     }
 
     @Override
@@ -111,15 +133,16 @@ public class AuthServiceImpl implements AuthService {
                         .email(request.getEmail())
                         .password(bcryptUtil.hashPassword(request.getPassword()))
                         .role(role)
+                        .isActive(true)
                         .build()
         );
     }
 
     private String defaultNameGenerator(String fullName){
-        int currentAt = fullName.indexOf("@");
-        if(currentAt != -1){
-            return fullName.substring(0, currentAt);
-        }
-        return fullName;
+            int currentAt = fullName.indexOf("@");
+            if(currentAt != -1){
+                return fullName.substring(0, currentAt);
+            }
+            return fullName;
     }
 }

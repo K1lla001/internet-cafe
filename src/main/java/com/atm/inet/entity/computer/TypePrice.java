@@ -7,27 +7,31 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_computer_image")
-public class ComputerImage extends Auditable<String> {
+@Table(name = "m_type_price")
+public class TypePrice extends Auditable<String> {
+
     @Id
-    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @GeneratedValue(generator = "system-uuid")
     private String id;
 
-    private String name;
-    private String contentType;
-    private String path;
-    private Long size;
-
     @ManyToOne
-    @JoinColumn(name = "type_id", referencedColumnName = "id")
+    @JoinColumn(name = "type_id")
     @JsonBackReference
     private Type type;
 
+    @Column(name = "price", columnDefinition = "bigint check(price > 0)")
+    private Long price;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
 }
+

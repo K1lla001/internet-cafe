@@ -36,19 +36,5 @@ public class Computer extends Auditable<String> {
     @ManyToOne(targetEntity = Type.class)
     @JoinColumn(name = "type_id")
     private Type type;
-
-    @OneToMany(mappedBy = "computer", cascade = CascadeType.ALL)
-    private List<ComputerImage> computerImages;
-
-    public List<ComputerImage> getComputerImages() {
-        return Collections.unmodifiableList(computerImages);
-    }
-
-    public void addComputerImage(ComputerImage ComputerImage) {
-        computerImages.add(ComputerImage);
-    }
-
-    public void addAllComputerImage(List<ComputerImage> ComputerImages) {
-        this.computerImages.addAll(ComputerImages);
-    }
 }
+

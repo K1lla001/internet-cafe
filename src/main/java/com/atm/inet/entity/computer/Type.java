@@ -1,23 +1,25 @@
 package com.atm.inet.entity.computer;
 
 
+import com.atm.inet.entity.auditing.Auditable;
 import com.atm.inet.entity.constant.ECategory;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
 
-@Data
+
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "m_type")
-public class Type {
+public class Type extends Auditable<String> {
 
     @Id
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -25,10 +27,33 @@ public class Type {
     private String id;
 
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Category Can Not Be Empty")
     private ECategory category;
 
-    @NotNull(message = "Price Can Not Be Empty")
-    private Long price;
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<TypePrice> typePrices;
 
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ComputerImage> computerImages;
+
+    public List<TypePrice> getTypePrices() {
+        return Collections.unmodifiableList(typePrices);
+    }
+
+    public void setTypePrices(TypePrice typePrices) {
+        this.typePrices.add(typePrices);
+    }
+
+    public List<ComputerImage> getComputerImages() {
+        return Collections.unmodifiableList(computerImages);
+    }
+
+    public void addComputerImage(ComputerImage ComputerImage) {
+        computerImages.add(ComputerImage);
+    }
+
+    public void addAllComputerImage(List<ComputerImage> ComputerImages) {
+        this.computerImages.addAll(ComputerImages);
+    }
 }

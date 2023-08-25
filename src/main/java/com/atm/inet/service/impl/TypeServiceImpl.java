@@ -1,40 +1,94 @@
 package com.atm.inet.service.impl;
 
-import com.atm.inet.entity.computer.Type;
+import com.atm.inet.entity.computer.*;
 import com.atm.inet.entity.constant.ECategory;
+import com.atm.inet.model.request.ComputerRequest;
+import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.repository.TypeRepository;
-import com.atm.inet.service.TypeService;
+import com.atm.inet.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.PrePersist;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TypeServiceImpl implements TypeService {
 
     private final TypeRepository typeRepository;
+    private final ComputerService computerService;
+    private final ComputerImageService computerImageService;
+    private final ComputerSpecService computerSpecService;
 
     @Override
-    public Type getOrSave(ECategory category) {
-        return typeRepository.findByCategory(category).orElseGet(() ->
-            typeRepository.saveAndFlush(Type.builder()
-                    .category(category)
-                    .price(setPrice(category, 0L))
-                    .build()));
-    }
+    @Transactional(rollbackOn = Exception.class)
+    @PrePersist
+    public ComputerResponse save(ComputerRequest request, List<MultipartFile> multipartFiles) {
+        TypePrice typePrice = TypePrice.builder()
+                .price(request.getPrice())
+                .isActive(true)
+                .build();
 
-    @Override
-    public Long setPrice(ECategory category, Long updatePrice) {
-        long price = 0L;
+        Type type = Type.builder()
+                .category(ECategory.valueOf(request.getCategory()))
+                .typePrices(List.of(typePrice))
+                .build();
 
-        if (category.equals(ECategory.EXTREME)) {
-            price = 10_000L + updatePrice;
-        } else if (category.equals(ECategory.VIP)) {
-            price = 8_000L + updatePrice;
-        } else if (category.equals(ECategory.REGULAR)) {
-            price = 6_000L + updatePrice;
+        typeRepository.saveAndFlush(type);
+
+        typePrice.setType(type);
+
+        List<ComputerImage> computerImages = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            ComputerImage computerImage = computerImageService.create(type,multipartFile);
+            computerImages.add(computerImage);
         }
 
-        return price;
+        type.setComputerImages(computerImages);
+
+        ComputerSpec computerSpec = ComputerSpec.builder()
+                .processor(request.getProcessor())
+                .ram(request.getRam())
+                .monitor(request.getMonitor())
+                .ssd(request.getSsd())
+                .vga(request.getVga())
+                .build();
+
+        computerSpecService.add(computerSpec);
+
+        Computer computer = Computer.builder()
+                .name(request.getName())
+                .code(request.getCode())
+                .status(true)
+                .specification(computerSpec)
+                .type(type)
+                .build();
+
+
+        computerService.add(computer);
+
+        return generateResponse(computer, type, computerSpec);
     }
 
+
+    private ComputerResponse generateResponse(Computer computer, Type type, ComputerSpec computerSpec) {
+        return ComputerResponse.builder()
+                .id(computer.getId())
+                .name(computer.getName())
+                .code(computer.getCode())
+                .category(type.getCategory().name())
+                .prices(type.getTypePrices())
+                .processor(computerSpec.getProcessor())
+                .ram(computerSpec.getRam())
+                .monitor(computerSpec.getMonitor())
+                .ssd(computerSpec.getSsd())
+                .vga(computerSpec.getVga())
+                .build();
+    }
 }

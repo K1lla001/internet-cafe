@@ -1,5 +1,6 @@
 package com.atm.inet.entity;
 
+
 import com.atm.inet.entity.auditing.Auditable;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;

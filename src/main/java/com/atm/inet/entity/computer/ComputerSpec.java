@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -28,4 +29,7 @@ public class ComputerSpec extends Auditable<String> {
     private String monitor;
     private String ssd;
     private String vga;
+
+
+
 }

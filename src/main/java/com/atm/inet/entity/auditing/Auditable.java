@@ -1,6 +1,8 @@
 package com.atm.inet.entity.auditing;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Data
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable<U> {
 
@@ -23,6 +26,7 @@ public abstract class Auditable<U> {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
+    @JsonFormat(pattern = "YYYY-MM-dd HH:mm")
     protected LocalDateTime creationDate;
 
     @LastModifiedBy
@@ -31,8 +35,6 @@ public abstract class Auditable<U> {
 
     @LastModifiedDate
     @Column(name = "update_at")
+    @JsonFormat(pattern = "YYYY-MM-dd HH:mm")
     protected  LocalDateTime updateDate;
-
-
-
 }

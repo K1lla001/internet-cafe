@@ -4,7 +4,6 @@ import com.atm.inet.entity.Role;
 import com.atm.inet.entity.UserCredential;
 import com.atm.inet.entity.UserDetailsImpl;
 import com.atm.inet.repository.UserCredentialRepository;
-import com.atm.inet.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +19,6 @@ import java.util.Collections;
 public class UserDetailServiceImpl implements UserDetailsService {
 
     private final UserCredentialRepository userCredentialRepository;
-    private final RoleService roleService;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserCredential userCredential = userCredentialRepository.findByEmail(email).orElseThrow(() ->

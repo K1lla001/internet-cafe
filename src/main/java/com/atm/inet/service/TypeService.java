@@ -1,13 +1,12 @@
 package com.atm.inet.service;
 
+import com.atm.inet.model.request.ComputerRequest;
+import com.atm.inet.model.response.ComputerResponse;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.atm.inet.entity.computer.Type;
-import com.atm.inet.entity.constant.ECategory;
+import java.util.List;
 
 public interface TypeService {
-
-    Type getOrSave(ECategory category);
-
-    Long setPrice(ECategory category, Long updatePrice);
+    ComputerResponse save(ComputerRequest request, List<MultipartFile> computerImage);
 
 }

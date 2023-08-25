@@ -1,20 +1,21 @@
-package com.atm.inet.entity.computer;
+package com.atm.inet.entity;
 
 import com.atm.inet.entity.auditing.Auditable;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_computer_image")
-public class ComputerImage extends Auditable<String> {
+@Table(name = "m_profile_picture")
+
+public class ProfilePicture extends Auditable<String> {
+
     @Id
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     @GeneratedValue(generator = "system-uuid")
@@ -25,9 +26,8 @@ public class ComputerImage extends Auditable<String> {
     private String path;
     private Long size;
 
-    @ManyToOne
-    @JoinColumn(name = "type_id", referencedColumnName = "id")
-    @JsonBackReference
-    private Type type;
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
+    private UserCredential user;
 
 }

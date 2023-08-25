@@ -1,5 +1,9 @@
 package com.atm.inet.controller;
 
+import com.atm.inet.model.common.CommonResponse;
+import com.atm.inet.model.response.FileResponse;
+import com.atm.inet.model.response.UserResponse;
+import com.atm.inet.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(path = "/me")
-    public ResponseEntity<CommonResponse<UserResponse>> getUserInfo(Authentication authentication){
+    public ResponseEntity<CommonResponse<UserResponse>> getUserInfo(Authentication authentication) {
         UserResponse userInfo = userService.getUserInfo(authentication);
         return ResponseEntity.ok(
                 CommonResponse.<UserResponse>builder()
@@ -27,7 +31,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/profile-picture")
-    public ResponseEntity<CommonResponse<FileResponse>> uploadProfilePicture(@RequestParam(name = "image")MultipartFile multipartFile){
+    public ResponseEntity<CommonResponse<FileResponse>> uploadProfilePicture(@RequestParam(name = "image") MultipartFile multipartFile) {
         FileResponse fileResponse = userService.updateProfilePicture(multipartFile);
         return ResponseEntity.ok(
                 CommonResponse.<FileResponse>builder()
@@ -36,6 +40,18 @@ public class UserController {
                         .data(fileResponse)
                         .build()
         );
+    }
+
+    @DeleteMapping(path = "/profile-picture/{imageId}")
+    public ResponseEntity<?> deleteProfilePicture(@PathVariable(name = "imageId") String imageId) {
+        userService.deleteProfilePicture(imageId);
+        CommonResponse<?> response = CommonResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Successfully delete image")
+                .data("OK")
+                .build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 
 }

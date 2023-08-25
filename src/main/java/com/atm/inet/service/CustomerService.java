@@ -6,8 +6,7 @@ import com.atm.inet.model.request.CustomerRequest;
 import com.atm.inet.model.response.CustomerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
+import org.springframework.security.core.Authentication;
 
 public interface CustomerService {
 
@@ -15,8 +14,11 @@ public interface CustomerService {
 
     CustomerResponse updateCustomer(CustomerRequest customer);
 
+    CustomerResponse authenticationCustomer(Authentication authentication);
+
+    String findEmailById(String id);
+
     CustomerResponse findById(String id);
-    public String findEmailById(String id);
 
     Page<CustomerResponse> getCustomerPerPage(Pageable pageable, CustomerSearch customer);
 

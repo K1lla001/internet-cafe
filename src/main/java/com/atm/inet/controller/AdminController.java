@@ -1,9 +1,9 @@
 package com.atm.inet.controller;
 
-import com.enigma.ICafe.model.common.CommonResponse;
-import com.enigma.ICafe.model.request.UpdateAdminRequest;
-import com.enigma.ICafe.model.response.AdminResponse;
-import com.enigma.ICafe.service.AdminService;
+import com.atm.inet.model.common.CommonResponse;
+import com.atm.inet.model.request.UpdateAdminRequest;
+import com.atm.inet.model.response.AdminResponse;
+import com.atm.inet.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

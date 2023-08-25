@@ -1,14 +1,17 @@
 package com.atm.inet.controller;
 
-import com.atm.inet.entity.computer.Computer;
 import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.request.ComputerRequest;
 import com.atm.inet.model.response.ComputerResponse;
-import com.atm.inet.service.ComputerService;
+import com.atm.inet.service.TypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,28 +20,21 @@ import java.util.List;
 @RequestMapping(path = "/api/v1/computers")
 public class ComputerController {
 
-    private final ComputerService computerService;
+    private final TypeService typeService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<ComputerResponse>> addComputer(@RequestBody ComputerRequest request){
-        ComputerResponse computerResponse = computerService.addComputer(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+    public ResponseEntity<CommonResponse<ComputerResponse>> addComputer(
+            @RequestPart(name = "computer")ComputerRequest request,
+            @RequestPart(name = "images") List<MultipartFile> multipartFileList
+            ){
+        ComputerResponse savedComputer = typeService.save(request, multipartFileList);
+        return ResponseEntity.ok(
                 CommonResponse.<ComputerResponse>builder()
                         .statusCode(HttpStatus.CREATED.value())
-                        .message("Successfully Create New Computer!")
-                        .data(computerResponse)
+                        .message("Successfully add data!")
+                        .data(savedComputer)
                         .build()
         );
-    }
-
-    @GetMapping
-    public ResponseEntity<CommonResponse<?>> getAll(){
-        List<Computer> computersData = computerService.getAll();
-        return ResponseEntity.ok(CommonResponse.<List<Computer>>builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .message("Successfully Get All Data")
-                        .data(computersData)
-                .build());
     }
 
 }

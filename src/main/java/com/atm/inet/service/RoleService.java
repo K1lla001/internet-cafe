@@ -5,6 +5,6 @@ import com.atm.inet.entity.constant.ERole;
 
 public interface RoleService {
 
-    Role getOrSave(ERole role);
+   Role getOrSave(ERole role);
 
 }

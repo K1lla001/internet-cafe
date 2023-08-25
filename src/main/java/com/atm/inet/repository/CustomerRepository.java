@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, String> , JpaSpecificationExecutor<Customer> {
-    Optional<Customer> findFirstByUserCredential_Id(String email);
+public interface CustomerRepository extends JpaRepository<Customer, String>, JpaSpecificationExecutor<Customer> {
+    Optional<Customer> findFirstByUserCredential_Email(String email);
+
+
+    Boolean existsCustomerByPhoneNumber(String phoneNumber);
 }

@@ -1,14 +1,10 @@
 package com.atm.inet.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 
 @Data
@@ -23,16 +19,19 @@ public class UserCredential {
     @GeneratedValue(generator = "system-uuid")
     private String id;
 
-    @NotNull(message = "Email Can Not Be Empty")
     @Column(name = "email", unique = true)
     private String email;
 
-    @NotNull(message = "Password Can Not Be Empty")
     private String password;
-    private Boolean isActive;
-
 
     @OneToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    private Boolean isActive;
+
+
+    @OneToOne(mappedBy = "user")
+    @ToString.Exclude
+    private ProfilePicture profilePicture;
 }

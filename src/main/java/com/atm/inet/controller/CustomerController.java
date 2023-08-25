@@ -3,6 +3,7 @@ package com.atm.inet.controller;
 import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.common.CustomerSearch;
 import com.atm.inet.model.common.PagingResponse;
+import com.atm.inet.model.request.CustomerRequest;
 import com.atm.inet.model.response.CustomerResponse;
 import com.atm.inet.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,9 @@ public class CustomerController {
         );
     }
 
+
     @GetMapping(path = "/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<CustomerResponse>> findById(@PathVariable String id){
         CustomerResponse customer = customerService.findById(id);
         return ResponseEntity.ok(
@@ -63,4 +66,30 @@ public class CustomerController {
                         .build()
         );
     }
+
+    @PutMapping()
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody CustomerRequest request){
+        CustomerResponse customerResponse = customerService.updateCustomer(request);
+        return ResponseEntity.ok(
+                CommonResponse.<CustomerResponse>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully update data!")
+                        .data(customerResponse)
+                        .build()
+        );
+    }
+
+    @DeleteMapping(path = "/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<?>> deleteCustomer(@PathVariable String id){
+        customerService.deleteCustomer(id);
+        return ResponseEntity.ok(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully delete Data!")
+                        .build()
+        );
+    }
+
 }
