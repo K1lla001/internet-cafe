@@ -1,12 +1,10 @@
 package com.atm.inet.controller;
 
-import com.atm.inet.entity.constant.ECategory;
 import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.common.PagingResponse;
 import com.atm.inet.model.request.ComputerRequest;
 import com.atm.inet.model.response.ComputerResponse;
-import com.atm.inet.model.response.NewComputerResponse;
 import com.atm.inet.service.ComputerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,13 +26,13 @@ public class ComputerController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<NewComputerResponse>> addComputer(
+    public ResponseEntity<CommonResponse<ComputerResponse>> addComputer(
             @RequestPart(name = "computer")ComputerRequest request,
             @RequestPart(name = "images") List<MultipartFile> multipartFileList
             ){
-        NewComputerResponse savedComputer = computerService.save(request, multipartFileList);
+        ComputerResponse savedComputer = computerService.save(request, multipartFileList);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                CommonResponse.<NewComputerResponse>builder()
+                CommonResponse.<ComputerResponse>builder()
                         .statusCode(HttpStatus.CREATED.value())
                         .message("Successfully add data!")
                         .data(savedComputer)

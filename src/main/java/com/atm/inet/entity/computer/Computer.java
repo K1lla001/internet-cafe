@@ -5,9 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.List;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
