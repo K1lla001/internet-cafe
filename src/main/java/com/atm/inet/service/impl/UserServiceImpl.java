@@ -1,11 +1,7 @@
 package com.atm.inet.service.impl;
 
-import com.atm.inet.entity.ProfilePicture;
-import com.atm.inet.entity.UserCredential;
-import com.atm.inet.entity.UserDetailsImpl;
+import com.atm.inet.entity.*;
 import com.atm.inet.entity.constant.ERole;
-import com.atm.inet.model.response.AdminResponse;
-import com.atm.inet.model.response.CustomerResponse;
 import com.atm.inet.model.response.FileResponse;
 import com.atm.inet.model.response.UserResponse;
 import com.atm.inet.repository.UserCredentialRepository;
@@ -32,22 +28,25 @@ public class UserServiceImpl implements UserService {
 
     private final UserCredentialRepository userCredentialRepository;
     private final ProfilePictureService profilePictureService;
-    private final AdminService adminService;
     private final CustomerService customerService;
+    private final AdminService adminService;
 
 
     @Override
     public UserResponse getUserInfo(Authentication authentication) {
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-        UserCredential userCredential = userCredentialRepository.findByEmail(principal.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Credentials"));
+        UserCredential userCredential = userCredentialRepository.findByEmail(principal.getEmail()).orElseThrow(()
+                -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Credentials"));
 
-        if (userCredential.getRole().getRole().equals(ERole.ROLE_ADMIN)) {
-            AdminResponse adminResponse = adminService.authenticateUser(authentication);
-
+        if(userCredential.getRole().getRole().equals(ERole.ROLE_CUSTOMER)){
+            Customer customer = customerService.findByEmail(userCredential.getEmail());
+            log.warn("PROFILE PICTURE : {}", userCredential.getProfilePicture());
             return UserResponse.builder()
                     .userId(userCredential.getId())
-                    .fullName(adminResponse.getFullName())
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .phoneNumber(customer.getPhoneNumber())
+                    .isMember(customer.getIsMember())
                     .email(userCredential.getEmail())
                     .role(userCredential.getRole().getRole().name())
                     .fileResponse(Objects.nonNull(userCredential.getProfilePicture()) ?
@@ -55,28 +54,29 @@ public class UserServiceImpl implements UserService {
                                     .id(userCredential.getProfilePicture().getId())
                                     .filename(userCredential.getProfilePicture().getName())
                                     .url("/api/users/profile-picture/" + userCredential.getProfilePicture().getId())
-                                    .build() : null)
+                                    .build(): null)
                     .build();
+
+        } else if(userCredential.getRole().getRole().equals(ERole.ROLE_ADMIN)){
+            Admin admin = adminService.findByEmail(userCredential.getEmail());
+            log.warn("PROFILE PICTURE : {}", userCredential.getProfilePicture());
+            return UserResponse.builder()
+                    .userId(userCredential.getId())
+                    .fullName(admin.getFullName())
+                    .email(userCredential.getEmail())
+                    .phoneNumber(admin.getPhoneNumber())
+                    .role(userCredential.getRole().getRole().name())
+                    .fileResponse(Objects.nonNull(userCredential.getProfilePicture()) ?
+                            FileResponse.builder()
+                                    .id(userCredential.getProfilePicture().getId())
+                                    .filename(userCredential.getProfilePicture().getName())
+                                    .url("/api/users/profile-picture/" + userCredential.getProfilePicture().getId())
+                                    .build(): null)
+                    .build();
+        } else {
+            throw new IllegalStateException("Unexpected role encountered");
         }
-
-            CustomerResponse customerResponse = customerService.authenticationCustomer(authentication);
-
-            return UserResponse.builder()
-                    .userId(userCredential.getId())
-                    .firstName(customerResponse.getFirstName())
-                    .lastName(customerResponse.getLastName())
-                    .email(userCredential.getEmail())
-                    .role(userCredential.getRole().getRole().name())
-                    .fileResponse(Objects.nonNull(userCredential.getProfilePicture()) ?
-                            FileResponse.builder()
-                                    .id(userCredential.getProfilePicture().getId())
-                                    .filename(userCredential.getProfilePicture().getName())
-                                    .url("/api/users/profile-picture/" + userCredential.getProfilePicture().getId())
-                                    .build() : null)
-                    .build();
-
     }
-
 
     @Override
     public UserCredential getByAuthentication(Authentication authentication) {
