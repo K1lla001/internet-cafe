@@ -15,6 +15,7 @@ import com.atm.inet.service.ProfilePictureService;
 import com.atm.inet.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -84,6 +85,11 @@ public class UserServiceImpl implements UserService {
         return userCredentialRepository.findByEmail(userDetails.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Credentials!"));
 
+    }
+
+    @Override
+    public Resource downloadProfilePicture(String imageId) {
+        return profilePictureService.download(imageId);
     }
 
     @Override

@@ -5,7 +5,10 @@ import com.atm.inet.model.response.FileResponse;
 import com.atm.inet.model.response.UserResponse;
 import com.atm.inet.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +55,15 @@ public class UserController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @GetMapping(path = "profile-picture/{imageId}")
+    public ResponseEntity<?> downloadPicture(@PathVariable(name = "imageId") String id){
+        Resource resource = userService.downloadProfilePicture(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.IMAGE_PNG)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
 }
