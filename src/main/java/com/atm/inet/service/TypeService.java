@@ -6,7 +6,7 @@ import com.atm.inet.entity.constant.ECategory;
 
 public interface TypeService {
 
-    Type save(Type type);
+    public Type findById(String id);
 
     Type getOrSave(ECategory category, TypePrice price);
 }

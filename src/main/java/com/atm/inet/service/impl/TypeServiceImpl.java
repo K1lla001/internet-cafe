@@ -6,7 +6,9 @@ import com.atm.inet.repository.TypeRepository;
 import com.atm.inet.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -20,10 +22,9 @@ public class TypeServiceImpl implements TypeService {
     private final TypeRepository typeRepository;
 
     @Override
-    public Type save(Type type) {
-        return typeRepository.saveAndFlush(type);
+    public Type findById(String id){
+        return typeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Type Not Found!"));
     }
-
     @Override
     public Type getOrSave(ECategory category, TypePrice price) {
         return typeRepository.findByCategory(category).orElseGet(() ->
