@@ -13,6 +13,5 @@ public interface TypeService {
     Type getOrSave(ECategory category, TypePrice price);
     TypeResponse update(TypeRequest request);
 
-    TypeResponse getByCategoryResponse(ECategory category);
-    Type getByCategory(ECategory category);
+    TypeResponse getByCategory(ECategory category);
 }

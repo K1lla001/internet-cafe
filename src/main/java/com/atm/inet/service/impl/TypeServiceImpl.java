@@ -59,13 +59,8 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public TypeResponse getByCategoryResponse(ECategory category) {
+    public TypeResponse getByCategory(ECategory category) {
         return this.toResponse(Objects.requireNonNull(typeRepository.findByCategory(category).orElse(null)));
-    }
-
-    @Override
-    public Type getByCategory(ECategory category) {
-        return Objects.requireNonNull(typeRepository.findByCategory(category).orElse(null));
     }
 
     private TypeResponse toResponse(Type type){

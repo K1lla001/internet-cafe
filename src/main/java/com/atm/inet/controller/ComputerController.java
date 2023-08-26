@@ -40,22 +40,6 @@ public class ComputerController {
         );
     }
 
-    @PutMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<ComputerResponse>> updateComputer(
-            @RequestPart(name = "computer")ComputerRequest request,
-            @RequestPart(name = "images") List<MultipartFile> multipartFileList
-            ){
-        ComputerResponse savedComputer = computerService.updateComputer(request, multipartFileList);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                CommonResponse.<ComputerResponse>builder()
-                        .statusCode(HttpStatus.CREATED.value())
-                        .message("Successfully add data!")
-                        .data(savedComputer)
-                        .build()
-        );
-    }
-
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber,
