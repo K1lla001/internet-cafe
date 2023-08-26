@@ -1,6 +1,5 @@
 package com.atm.inet.service.impl;
 
-import com.atm.inet.entity.Customer;
 import com.atm.inet.entity.computer.*;
 import com.atm.inet.entity.constant.ECategory;
 import com.atm.inet.model.common.ComputerSearch;
@@ -85,12 +84,22 @@ public class ComputerServiceImpl implements ComputerService {
     }
 
     @Override
-    public ComputerResponse updateComputer(ComputerRequest updateComputer) {
+    public ComputerResponse updateComputer(ComputerRequest updateComputer, List<MultipartFile> computerImage) {
         Computer computer = getComputerById(updateComputer.getId());
+
         computer.setName(updateComputer.getName());
         computer.setCode(updateComputer.getCode());
+        computer.setType(typeService.getByCategory(computer.getType().getCategory()));
 
-        return null;
+        computer.getSpecification().setProcessor(updateComputer.getProcessor());
+        computer.getSpecification().setRam(updateComputer.getRam());
+        computer.getSpecification().setMonitor(updateComputer.getMonitor());
+        computer.getSpecification().setSsd(updateComputer.getSsd());
+        computer.getSpecification().setVga(updateComputer.getVga());
+
+        computerRepository.save(computer);
+
+        return generateComputerResponse(computer);
     }
 
     @Override
@@ -115,7 +124,7 @@ public class ComputerServiceImpl implements ComputerService {
 
     private ComputerResponse generateComputerResponse(Computer computer) {
 
-        TypeResponse typeResponse = typeService.getByCategory(computer.getType().getCategory());
+        TypeResponse typeResponse = typeService.getByCategoryResponse(computer.getType().getCategory());
         typeResponse.setImages(this.generateFileResponse(computer.getType()));
 
         return ComputerResponse.builder()

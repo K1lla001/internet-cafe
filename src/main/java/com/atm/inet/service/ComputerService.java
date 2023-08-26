@@ -14,7 +14,7 @@ public interface ComputerService {
     ComputerResponse save(ComputerRequest request, List<MultipartFile> computerImage);
 
     Page<ComputerResponse> getAll(Pageable pageable, ComputerSearch computerSearch);
-    ComputerResponse updateComputer(ComputerRequest updateComputer);
+    ComputerResponse updateComputer(ComputerRequest updateComputer,List<MultipartFile> computerImage);
 
     ComputerResponse getById(String id);
 
