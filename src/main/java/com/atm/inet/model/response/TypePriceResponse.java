@@ -13,6 +13,6 @@ public class TypePriceResponse {
 
     private String id;
     private Long price;
-    private Boolean isActive;
+//    private Boolean isActive;
 
 }
