@@ -15,7 +15,7 @@ import java.util.List;
 public class TypeResponse {
     private String id;
     private String category;
-    private List<TypePriceResponse> prices;
+    private TypePriceResponse prices;
     private List<ComputerImageResponse> images;
 
 }

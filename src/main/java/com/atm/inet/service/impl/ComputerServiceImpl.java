@@ -12,7 +12,6 @@ import com.atm.inet.service.ComputerService;
 import com.atm.inet.service.ComputerSpecService;
 import com.atm.inet.service.TypeService;
 import com.atm.inet.utils.specification.ComputerSpecification;
-import com.atm.inet.utils.specification.CustomerSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +36,7 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public NewComputerResponse save(ComputerRequest request, List<MultipartFile> multipartFiles) {
+    public ComputerResponse save(ComputerRequest request, List<MultipartFile> multipartFiles) {
 
         TypePrice typePrice = TypePrice.builder()
                 .price(request.getPrice())
@@ -75,7 +74,7 @@ public class ComputerServiceImpl implements ComputerService {
 
         computerRepository.saveAndFlush(computer);
 
-        return generateNewComputerResponse(computer, type, computerSpec);
+        return generateComputerResponse(computer);
     }
 
     @Override
@@ -115,20 +114,9 @@ public class ComputerServiceImpl implements ComputerService {
     }
 
     private ComputerResponse generateComputerResponse(Computer computer) {
-        List<TypePriceResponse> priceResponses = computer.getType().getTypePrices().stream()
-                .map(typePrice -> TypePriceResponse.builder()
-                        .id(typePrice.getId())
-                        .price(typePrice.getPrice())
-                        .isActive(typePrice.getIsActive())
-                        .build())
-                .toList();
 
-        TypeResponse typeResponse = TypeResponse.builder()
-                .id(computer.getType().getId())
-                .category(computer.getType().getCategory().name())
-                .prices(priceResponses)
-                .images(generateFileResponse(computer.getType()))
-                .build();
+        TypeResponse typeResponse = typeService.getByCategory(computer.getType().getCategory());
+        typeResponse.setImages(this.generateFileResponse(computer.getType()));
 
         return ComputerResponse.builder()
                 .id(computer.getId())
@@ -150,29 +138,4 @@ public class ComputerServiceImpl implements ComputerService {
                         .build()).toList();
     }
 
-    private NewComputerResponse generateNewComputerResponse(Computer computer, Type type, ComputerSpec computerSpec) {
-
-        List<TypePriceResponse> priceResponses = new ArrayList<>();
-
-        type.getTypePrices().forEach(typePrice ->
-                priceResponses.add(TypePriceResponse.builder()
-                        .id(typePrice.getId())
-                        .price(typePrice.getPrice())
-                        .isActive(typePrice.getIsActive())
-                        .build())
-        );
-
-        return NewComputerResponse.builder()
-                .id(computer.getId())
-                .name(computer.getName())
-                .code(computer.getCode())
-                .category(type.getCategory().name())
-                .price(priceResponses)
-                .processor(computerSpec.getProcessor())
-                .ram(computerSpec.getRam())
-                .monitor(computerSpec.getMonitor())
-                .ssd(computerSpec.getSsd())
-                .vga(computerSpec.getVga())
-                .build();
-    }
 }

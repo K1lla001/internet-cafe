@@ -27,6 +27,7 @@ public class Type extends Auditable<String> {
     private String id;
 
     @Enumerated(EnumType.STRING)
+    @Column(unique = true)
     private ECategory category;
 
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
