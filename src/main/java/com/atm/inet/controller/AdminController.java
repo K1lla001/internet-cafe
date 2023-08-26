@@ -38,4 +38,15 @@ public class AdminController {
                 .build());
     }
 
+    @DeleteMapping(path = "/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> delete(@PathVariable String id){
+        adminService.delete(id);
+        CommonResponse<?> response = CommonResponse.builder()
+                .data("Successfully deleting your admin account")
+                .build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
 }
