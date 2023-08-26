@@ -15,6 +15,9 @@ public class ComputerSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
 
+            Predicate status = criteriaBuilder.isTrue(root.get("status"));
+            predicateList.add(status);
+
             if (computerSearch.getName() != null) {
                 Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + computerSearch.getName().toLowerCase() + "%");
                 predicateList.add(namePredicate);
