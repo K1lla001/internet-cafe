@@ -86,6 +86,15 @@ public class ComputerServiceImpl implements ComputerService {
     }
 
     @Override
+    public ComputerResponse updateComputer(ComputerRequest updateComputer) {
+        Computer computer = getComputerById(updateComputer.getId());
+        computer.setName(updateComputer.getName());
+        computer.setCode(updateComputer.getCode());
+
+        return null;
+    }
+
+    @Override
     public ComputerResponse getById(String id) {
         Computer computer = getComputerById(id);
        return generateComputerResponse(computer);
@@ -95,7 +104,9 @@ public class ComputerServiceImpl implements ComputerService {
     public String deleteById(String id) {
         Computer computer = getComputerById(id);
         computerImageService.deleteAll(computer.getType().getComputerImages());
-        computerRepository.delete(computer);
+        computer.setCode("");
+        computer.setStatus(false);
+        computerRepository.save(computer);
         return id;
     }
 
