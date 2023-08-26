@@ -35,7 +35,7 @@ public class PaypalController {
         } catch (PayPalRESTException e) {
             e.printStackTrace();
         }
-        return "redirect:/";
+        return "redirect:/v1/paypal";
     }
 
 
@@ -55,6 +55,6 @@ public class PaypalController {
         } catch (PayPalRESTException e) {
             System.out.println(e.getMessage());
         }
-        return "redirect:/";
+        return "redirect:/v1/paypal";
     }
 }
