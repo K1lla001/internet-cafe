@@ -9,6 +9,7 @@ public interface AdminService {
 
     AdminResponse authenticateUser(Authentication authentication);
     Admin create(Admin admin);
+    AdminResponse getById(String id);
 
     AdminResponse update(UpdateAdminRequest request);
 
