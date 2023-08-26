@@ -35,6 +35,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public AdminResponse getById(String id) {
+        return generateResponse(findById(id));
+    }
+
+    @Override
     public AdminResponse update(UpdateAdminRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AdminResponse adminResponse = authenticateUser(authentication);
