@@ -39,7 +39,7 @@ public class AdminController {
     }
 
     @DeleteMapping(path = "/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable String id){
         adminService.delete(id);
         CommonResponse<?> response = CommonResponse.builder()
