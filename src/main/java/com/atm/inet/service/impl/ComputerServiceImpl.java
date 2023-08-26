@@ -102,6 +102,12 @@ public class ComputerServiceImpl implements ComputerService {
         return generateComputerResponse(computer);
     }
 
+
+    @Override
+    public Computer findByTypeId(String id) {
+        return computerRepository.findByType_Id(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer Not Found!"));
+    }
+
     @Override
     public ComputerResponse getById(String id) {
         Computer computer = getComputerById(id);

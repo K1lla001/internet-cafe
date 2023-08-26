@@ -8,7 +8,7 @@ import com.atm.inet.model.response.TypeResponse;
 
 public interface TypeService {
 
-    Type save(Type type);
+    public Type findById(String id);
 
     Type getOrSave(ECategory category, TypePrice price);
     TypeResponse update(TypeRequest request);

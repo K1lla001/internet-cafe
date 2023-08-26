@@ -27,10 +27,9 @@ public class TypeServiceImpl implements TypeService {
     private final TypePriceService typePriceService;
 
     @Override
-    public Type save(Type type) {
-        return typeRepository.saveAndFlush(type);
+    public Type findById(String id){
+        return typeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Type Not Found!"));
     }
-
     @Override
     public Type getOrSave(ECategory category, TypePrice price) {
         return typeRepository.findByCategory(category).orElseGet(() ->
