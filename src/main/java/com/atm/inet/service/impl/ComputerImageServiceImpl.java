@@ -7,6 +7,7 @@ import com.atm.inet.repository.ComputerImageRepository;
 import com.atm.inet.service.BaseFileService;
 import com.atm.inet.service.ComputerImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,12 @@ public class ComputerImageServiceImpl implements ComputerImageService {
     @Override
     public ComputerImage findById(String id) {
         return computerImageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found!"));
+    }
+
+    @Override
+    public Resource downloadImage(String id) {
+        ComputerImage img = findById(id);
+        return baseFileService.get(img.getPath());
     }
 
     @Override

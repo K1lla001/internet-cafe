@@ -9,9 +9,12 @@ import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.model.response.NewComputerResponse;
 import com.atm.inet.service.ComputerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -103,6 +106,14 @@ public class ComputerController {
                         .data(deletedEntity)
                         .build()
         );
+    }
+
+    @GetMapping(path = "/image/{imageId}")
+    public ResponseEntity<?> downloadImg(@PathVariable(name = "imageId") String id){
+        Resource resource = computerService.downloadComputerImg(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.IMAGE_PNG)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
     }
 
 }

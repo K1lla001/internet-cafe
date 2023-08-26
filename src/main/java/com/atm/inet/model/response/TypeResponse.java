@@ -16,6 +16,6 @@ public class TypeResponse {
     private String id;
     private String category;
     private List<TypePriceResponse> prices;
-    private List<ComputerImageResponse> images;
+    private List<FileResponse> images;
 
 }

@@ -14,6 +14,7 @@ import com.atm.inet.service.TypeService;
 import com.atm.inet.utils.specification.ComputerSpecification;
 import com.atm.inet.utils.specification.CustomerSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -146,14 +147,18 @@ public class ComputerServiceImpl implements ComputerService {
                 .build();
     }
 
-    private List<ComputerImageResponse> generateFileResponse(Type type) {
+    private List<FileResponse> generateFileResponse(Type type) {
         return type.getComputerImages().stream().map(computerImage ->
-                ComputerImageResponse.builder()
+                FileResponse.builder()
                         .id(computerImage.getId())
-                        .name(computerImage.getName())
-                        .contentType(computerImage.getContentType())
-                        .path(computerImage.getPath())
+                        .filename(computerImage.getName())
+                        .url("/api/v1/computers/image/" + computerImage.getId())
                         .build()).toList();
+    }
+
+    @Override
+    public Resource downloadComputerImg(String id) {
+        return computerImageService.downloadImage(id);
     }
 
     private NewComputerResponse generateNewComputerResponse(Computer computer, Type type, ComputerSpec computerSpec) {
