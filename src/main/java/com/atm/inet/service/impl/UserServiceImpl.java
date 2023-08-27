@@ -36,7 +36,6 @@ public class UserServiceImpl implements UserService {
     private final AdminService adminService;
     private final CustomerService customerService;
 
-
     @Override
     public UserResponse getUserInfo(Authentication authentication) {
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
