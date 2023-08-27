@@ -11,7 +11,7 @@ public interface OrderDetailService {
 
       PaymentResponse create(OrderDetailRequest request);
 
-      OrderDetail getById(String id);
+      String updateStatus(String id);
 
       List<OrderDetail> getAll();
 
