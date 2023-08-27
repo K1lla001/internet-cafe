@@ -39,13 +39,6 @@ public class MidtransService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString((serverKey + ":").getBytes()));
 
-
-//        Config config = Config.builder()
-//                .setServerKey(serverKey)
-//                .setClientKey(clientKey)
-//                .setIsProduction(false)
-//                .build();
-
         Map<String, Object> transRequest = requestTransactionObj(respose);
 
 
@@ -73,8 +66,22 @@ public class MidtransService {
 
     }
 
+    public String getTransactionById(String id){
+
+        String apiUrl = String.format("https://api.sandbox.midtrans.com/v2/%s/status", id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString((serverKey + ":").getBytes()));
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET,requestEntity,String.class);
+
+        return responseEntity.getBody();
+    }
+
     @NotNull
-    private static Map<String, Object> requestTransactionObj(OrderDetailRespose respose) {
+    private Map<String, Object> requestTransactionObj(OrderDetailRespose respose) {
         Map<String, Object> transDetail = new HashMap<>();
         transDetail.put("order_id", respose.getOrderId());
         transDetail.put("gross_amount", respose.getPrice());
@@ -93,7 +100,7 @@ public class MidtransService {
         customer.put("phone", respose.getCustomerPhoneNumber());
 
         Map<String, Object> expiration = new HashMap<>();
-        expiration.put("duration", 10);
+        expiration.put("duration", 2);
         expiration.put("unit", "minute");
 
         Map<String, Object> transRequest = new HashMap<>();
@@ -104,6 +111,5 @@ public class MidtransService {
         return transRequest;
     }
 
-    ;
 
 }

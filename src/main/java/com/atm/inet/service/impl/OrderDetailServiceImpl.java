@@ -13,12 +13,14 @@ import com.atm.inet.model.response.PaymentResponse;
 import com.atm.inet.repository.OrderDetailRepository;
 import com.atm.inet.service.*;
 import com.atm.inet.service.payment.MidtransService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.midtrans.Config;
 import com.midtrans.httpclient.error.MidtransError;
 import com.midtrans.service.MidtransSnapApi;
 import com.midtrans.service.impl.MidtransSnapApiImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -87,6 +89,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 .computerCode(computer.getCode())
                 .computerName(computer.getName())
                 .type(type.getCategory().name())
+                .status(orderDetail.getStatus().name())
                 .price(price.getPrice() * orderDetail.getDuration())
                 .customerFirstName(customer.getFirstName())
                 .customerLastName(customer.getLastName())
@@ -100,8 +103,22 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public OrderDetail getById(String id) {
-        return null;
+    public String updateStatus(String id) {
+        OrderDetail orderDetail = orderDetailRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order Id Not Found!"));
+
+        String transactionById = midtransService.getTransactionById(orderDetail.getId());
+
+        JSONObject jsonObject = new JSONObject(transactionById);
+
+        String transactionStatus = jsonObject.getString("transaction_status");
+
+        if (transactionStatus.equalsIgnoreCase("settlement")) {
+            orderDetail.setStatus(EStatus.SUCCESS);
+        } else if (transactionStatus.equalsIgnoreCase("expire") || transactionStatus.equalsIgnoreCase("cancel")) {
+            orderDetail.setStatus(EStatus.FAILED);
+        }
+        orderDetailRepository.save(orderDetail);
+        return transactionById;
     }
 
     @Override

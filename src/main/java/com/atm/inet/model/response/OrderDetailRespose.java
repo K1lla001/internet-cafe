@@ -19,6 +19,7 @@ public class OrderDetailRespose {
     private String computerName;
     private String type;
     private Long price;
+    private String status;
     private String customerFirstName;
     private String customerLastName;
     private String customerPhoneNumber;
