@@ -45,7 +45,7 @@ public class ComputerServiceImpl implements ComputerService {
                 .isActive(true)
                 .build();
 
-        Type type = typeService.getOrSave(ECategory.valueOf(request.getCategory()), typePrice);
+        Type type = typeService.getOrSave(ECategory.valueOf(request.getCategory().toUpperCase()), typePrice);
 
         typePrice.setType(type);
 
