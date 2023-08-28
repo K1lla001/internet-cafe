@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
             log.warn("PROFILE PICTURE : {}", userCredential.getProfilePicture());
             return UserResponse.builder()
                     .userId(userCredential.getId())
+                    .id(customer.getId())
                     .firstName(customer.getFirstName())
                     .lastName(customer.getLastName())
                     .phoneNumber(customer.getPhoneNumber())
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService {
             log.warn("PROFILE PICTURE : {}", userCredential.getProfilePicture());
             return UserResponse.builder()
                     .userId(userCredential.getId())
+                    .id(admin.getId())
                     .fullName(admin.getFullName())
                     .email(userCredential.getEmail())
                     .phoneNumber(admin.getPhoneNumber())
@@ -78,45 +80,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IllegalStateException("Unexpected role encountered");
         }
-
-//        UserCredential userCredential = userCredentialRepository.findByEmail(principal.getEmail())
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Credentials"));
-//
-//        if (userCredential.getRole().getRole().equals(ERole.ROLE_ADMIN)) {
-//            AdminResponse adminResponse = adminService.authenticateUser(authentication);
-//
-//            return UserResponse.builder()
-//                    .userId(userCredential.getId())
-//                    .userLoginId(adminResponse.getAdminId())
-//                    .fullName(adminResponse.getFullName())
-//                    .email(userCredential.getEmail())
-//                    .role(userCredential.getRole().getRole().name())
-//                    .fileResponse(Objects.nonNull(userCredential.getProfilePicture()) ?
-//                            FileResponse.builder()
-//                                    .id(userCredential.getProfilePicture().getId())
-//                                    .filename(userCredential.getProfilePicture().getName())
-//                                    .url("/api/users/profile-picture/" + userCredential.getProfilePicture().getId())
-//                                    .build() : null)
-//                    .build();
-//        }
-//
-//            CustomerResponse customerResponse = customerService.authenticationCustomer(authentication);
-//
-//            return UserResponse.builder()
-//                    .userId(userCredential.getId())
-//                    .userLoginId(customerResponse.getId())
-//                    .firstName(customerResponse.getFirstName())
-//                    .lastName(customerResponse.getLastName())
-//                    .email(userCredential.getEmail())
-//                    .role(userCredential.getRole().getRole().name())
-//                    .fileResponse(Objects.nonNull(userCredential.getProfilePicture()) ?
-//                            FileResponse.builder()
-//                                    .id(userCredential.getProfilePicture().getId())
-//                                    .filename(userCredential.getProfilePicture().getName())
-//                                    .url("/api/users/profile-picture/" + userCredential.getProfilePicture().getId())
-//                                    .build() : null)
-//                    .build();
-
     }
 
 
