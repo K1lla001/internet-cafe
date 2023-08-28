@@ -1,6 +1,7 @@
 package com.atm.inet.controller;
 
 
+import com.atm.inet.entity.OrderDetail;
 import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.request.OrderDetailRequest;
 import com.atm.inet.model.response.OrderDetailRespose;
@@ -29,5 +30,20 @@ public class OrderDetailController {
                                 .build()
                 );
     }
+    
+    
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<CommonResponse<OrderDetail>> getById(@PathVariable String id){
+        OrderDetail orderDetail = orderDetailService.findById(id);
+        return ResponseEntity.ok(
+                CommonResponse.<OrderDetail>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully get data")
+                        .data(orderDetail)
+                        .build()
+        );
+    }
+
+
 
 }

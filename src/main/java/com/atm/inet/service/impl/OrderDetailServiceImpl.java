@@ -120,8 +120,15 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderDetailRepository.save(orderDetail);
         return transactionById;
     }
+
+
+    @Override
+    public OrderDetail findById(String id) {
+       return orderDetailRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction Data Not Found!"));
+    }
+
     @Override
     public List<OrderDetail> getAll() {
-        return null;
+        return orderDetailRepository.findAll();
     }
 }

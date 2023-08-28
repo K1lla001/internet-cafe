@@ -41,8 +41,6 @@ public class MidtransService {
 
         Map<String, Object> transRequest = requestTransactionObj(respose);
 
-
-
         HttpEntity<Map<String, Object>> requestOrder = new HttpEntity<>(transRequest, headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, requestOrder, String.class);

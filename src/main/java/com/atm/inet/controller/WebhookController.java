@@ -24,12 +24,8 @@ public class WebhookController {
         String transactionId = extractTransactionIdFromRequestBody(requestBody);
         log.warn("INFO FROM CONTROLLER: {}", requestBody);
 
-        if (transactionId != null) {
             String updatedTransactionStatus = orderDetailService.updateStatus(transactionId);
             return ResponseEntity.ok(updatedTransactionStatus);
-        } else {
-            return ResponseEntity.badRequest().body("Invalid request");
-        }
     }
 
     private String extractTransactionIdFromRequestBody(String requestBody) {

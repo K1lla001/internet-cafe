@@ -104,7 +104,6 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(
                     request.getEmail(), request.getPassword()
             ));
-            log.info("INFO DARI LOGIN", authenticate.getPrincipal().toString());
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
             List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
@@ -116,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
 
             String jwtToken = jwtSecurityConfig.generateToken(user.getEmail());
             return LoginResponse.builder()
+                    .id(userEmail.get().getId())
                     .email(user.getEmail())
                     .role(currentRole)
                     .token(jwtToken)

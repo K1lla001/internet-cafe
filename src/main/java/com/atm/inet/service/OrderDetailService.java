@@ -13,6 +13,8 @@ public interface OrderDetailService {
 
       String updateStatus(String id);
 
+      OrderDetail findById(String id);
+
       List<OrderDetail> getAll();
 
 }

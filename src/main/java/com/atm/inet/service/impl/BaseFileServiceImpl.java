@@ -29,10 +29,10 @@ public class BaseFileServiceImpl implements BaseFileService {
     @Override
     public BaseFile create(MultipartFile multipartFile) {
         if (multipartFile.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "file tidak boleh kosong");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File can not be empty!");
 
         if (!List.of("image/jpeg", "image/png").contains(multipartFile.getContentType()))
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "content type tidak valid");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid Content Type!");
 
         try {
             Path directoryPath = Paths.get(path);
@@ -48,7 +48,7 @@ public class BaseFileServiceImpl implements BaseFileService {
                     .contentType(multipartFile.getContentType())
                     .build();
         } catch (IOException | RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "terjadi kegagalan server");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "a failure occurred on the server");
         }
     }
 
@@ -58,7 +58,7 @@ public class BaseFileServiceImpl implements BaseFileService {
         try {
             return new UrlResource(filePath.toUri());
         } catch (MalformedURLException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "terjadi kegagalan server");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "a failure occurred on the server");
         }
     }
     @Override
