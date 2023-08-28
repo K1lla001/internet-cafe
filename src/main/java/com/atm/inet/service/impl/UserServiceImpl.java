@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
             return UserResponse.builder()
                     .userId(userCredential.getId())
+                    .userLoginId(adminResponse.getAdminId())
                     .fullName(adminResponse.getFullName())
                     .email(userCredential.getEmail())
                     .role(userCredential.getRole().getRole().name())
@@ -63,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
             return UserResponse.builder()
                     .userId(userCredential.getId())
+                    .userLoginId(customerResponse.getId())
                     .firstName(customerResponse.getFirstName())
                     .lastName(customerResponse.getLastName())
                     .email(userCredential.getEmail())

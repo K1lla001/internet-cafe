@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 public class UserResponse {
 
     private String userId;
+    private String userLoginId;
     private @Nullable String fullName;
     private @Nullable String firstName;
     private @Nullable String lastName;

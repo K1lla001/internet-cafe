@@ -59,7 +59,7 @@ public class CustomerServiceImpl implements CustomerService {
             Customer foundCustomer = getCustomerById(customer.getId());
             foundCustomer.setFirstName(customer.getFirstName());
             foundCustomer.setLastName(customer.getLastName());
-            foundCustomer.setPhoneNumber(phoneNumberCheck(customer.getPhoneNumber()));
+            foundCustomer.setPhoneNumber(customer.getPhoneNumber());
             foundCustomer.setIsMember(customer.getIsMember());
             foundCustomer.setIsDeleted(false);
             customerRepository.save(foundCustomer);
