@@ -16,5 +16,6 @@ public interface AdminService {
     AdminResponse update(UpdateAdminRequest request);
 
     Admin findById(String id);
+    Admin findByEmail(String email);
     void delete(String id);
 }

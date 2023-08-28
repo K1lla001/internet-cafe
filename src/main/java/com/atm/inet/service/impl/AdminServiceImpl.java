@@ -64,6 +64,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public Admin findByEmail(String email) {
+        return adminRepository.findFirstByUserCredential_Email(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+    }
+
+    @Override
     public void delete(String id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AdminResponse adminResponse = authenticateUser(authentication);

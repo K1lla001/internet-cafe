@@ -20,6 +20,8 @@ public class UserResponse {
     private @Nullable String firstName;
     private @Nullable String lastName;
     private String email;
+    private String phoneNumber;
+    private @Nullable Boolean isMember;
     private String role;
     private FileResponse fileResponse;
 

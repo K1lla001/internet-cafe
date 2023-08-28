@@ -19,6 +19,7 @@ public interface CustomerService {
     String findEmailById(String id);
 
     CustomerResponse findById(String id);
+    Customer findByEmail(String email);
 
     Page<CustomerResponse> getCustomerPerPage(Pageable pageable, CustomerSearch customer);
 

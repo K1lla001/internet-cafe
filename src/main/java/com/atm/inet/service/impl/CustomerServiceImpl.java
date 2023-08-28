@@ -77,6 +77,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer findByEmail(String email) {
+        return customerRepository.findFirstByUserCredential_Email(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+    }
+
+    @Override
     public String findEmailById(String id) {
         Customer customer = customerRepository.findFirstByUserCredential_Email(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
         return customer.getUserCredential().getEmail();
