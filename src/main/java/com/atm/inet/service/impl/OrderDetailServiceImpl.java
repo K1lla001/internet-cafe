@@ -19,10 +19,13 @@ import com.midtrans.httpclient.error.MidtransError;
 import com.midtrans.service.MidtransSnapApi;
 import com.midtrans.service.impl.MidtransSnapApiImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.view.RedirectView;
@@ -50,15 +53,26 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Transactional(rollbackOn = Exception.class)
     public PaymentResponse create(OrderDetailRequest request) {
 
+        CustomerResponse customerResponse = customerService.findById(request.getCostumerId());
+        Type type = typeService.findById(request.getTypeId());
+        TypePrice price = typePriceService.findByTypeId(type.getId());
+        Computer computer = computerService.findByTypeId(type.getId());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomerResponse authenticateCustomer = customerService.authenticationCustomer(authentication);
+
+        if(!customerResponse.getId().equals(authenticateCustomer.getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed here!");
+
+
+        System.out.println(customerResponse.getId().equals(authenticateCustomer.getId()));
+
+
         log.info("START TRANSACTION");
 
         if (request.getBookingDate().isBefore(LocalDateTime.now()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Booking Date!");
 
-        CustomerResponse customerResponse = customerService.findById(request.getCostumerId());
-        Type type = typeService.findById(request.getTypeId());
-        TypePrice price = typePriceService.findByTypeId(type.getId());
-        Computer computer = computerService.findByTypeId(type.getId());
+
         if (!computer.getStatus()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Computer Is Already Use");
 
         Customer customer = Customer.builder()
@@ -80,7 +94,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 .endBookingDate(request.getBookingDate().plusHours(request.getDuration()))
                 .transactionDate(LocalDateTime.now())
                 .build();
-
 
         orderDetailRepository.save(orderDetail);
 

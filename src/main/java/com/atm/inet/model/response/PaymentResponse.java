@@ -13,6 +13,5 @@ import lombok.NoArgsConstructor;
 public class PaymentResponse {
     private String token;
     private String redirectUrl;
-    private OrderDetailRespose orderDetail;
 }
 

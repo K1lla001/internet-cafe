@@ -55,7 +55,6 @@ public class MidtransService {
             return PaymentResponse.builder()
                     .token(body.getString("token"))
                     .redirectUrl(body.getString("redirect_url"))
-                    .orderDetail(respose)
                     .build();
 
         } else {

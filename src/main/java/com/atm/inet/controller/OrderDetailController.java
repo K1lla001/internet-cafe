@@ -10,7 +10,11 @@ import com.atm.inet.service.OrderDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/orders")
@@ -19,6 +23,7 @@ public class OrderDetailController {
     private final OrderDetailService orderDetailService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<PaymentResponse>> order(@RequestBody OrderDetailRequest request){
         PaymentResponse paymentResponse = orderDetailService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -40,6 +45,19 @@ public class OrderDetailController {
                         .statusCode(HttpStatus.OK.value())
                         .message("Successfully get data")
                         .data(orderDetail)
+                        .build()
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<OrderDetail>>> getAll(){
+        List<OrderDetail> orderDetails = orderDetailService.getAll();
+
+        return ResponseEntity.ok(
+                CommonResponse.<List<OrderDetail>>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully get data")
+                        .data(orderDetails)
                         .build()
         );
     }
