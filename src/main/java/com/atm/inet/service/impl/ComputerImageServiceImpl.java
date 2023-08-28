@@ -55,8 +55,10 @@ public class ComputerImageServiceImpl implements ComputerImageService {
 
     @Override
     public void deleteAll(List<ComputerImage> imageList) {
-        imageList.forEach(computerImage ->
-                baseFileService.delete(computerImage.getPath())
-                );
+        if(!imageList.isEmpty()){
+            imageList.forEach(computerImage ->
+                    baseFileService.delete(computerImage.getPath())
+            );
+        }
     }
 }

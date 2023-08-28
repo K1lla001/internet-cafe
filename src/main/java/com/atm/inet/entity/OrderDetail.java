@@ -3,6 +3,7 @@ package com.atm.inet.entity;
 
 import com.atm.inet.entity.computer.Type;
 import com.atm.inet.entity.constant.EStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,10 +29,12 @@ public class OrderDetail {
 
     @ManyToOne(targetEntity = Customer.class)
     @JoinColumn(name = "customer_id")
+    @JsonBackReference
     private Customer customer;
 
     @ManyToOne(targetEntity = Type.class)
     @JoinColumn(name = "type_id")
+    @JsonBackReference
     private Type type;
 
     private Integer duration;

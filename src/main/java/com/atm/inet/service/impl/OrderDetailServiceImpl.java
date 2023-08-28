@@ -53,7 +53,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Transactional(rollbackOn = Exception.class)
     public PaymentResponse create(OrderDetailRequest request) {
 
-        CustomerResponse customerResponse = customerService.findById(request.getCostumerId());
+//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        LocalDateTime parsedDate = LocalDateTime.parse(request.getBookingDate(), dateTimeFormatter);
+
+
+        CustomerResponse customerResponse = customerService.findById(request.getCustomerId());
         Type type = typeService.findById(request.getTypeId());
         TypePrice price = typePriceService.findByTypeId(type.getId());
         Computer computer = computerService.findByTypeId(type.getId());
@@ -68,6 +72,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
 
         log.info("START TRANSACTION");
+
 
         if (request.getBookingDate().isBefore(LocalDateTime.now()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Booking Date!");

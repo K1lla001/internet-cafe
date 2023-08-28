@@ -108,14 +108,21 @@ public class AuthServiceImpl implements AuthService {
             UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
             List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
+            String customerId = "";
+
             String currentRole = "";
             if (!roles.isEmpty()) {
                 currentRole = roles.get(0);
+                if(currentRole.equals(ERole.ROLE_CUSTOMER.name())){
+                    Customer foundCs = customerService.findByEmail(user.getEmail());
+                    customerId = foundCs.getId();
+                }
             }
+
 
             String jwtToken = jwtSecurityConfig.generateToken(user.getEmail());
             return LoginResponse.builder()
-                    .id(userEmail.get().getId())
+                    .id(customerId)
                     .email(user.getEmail())
                     .role(currentRole)
                     .token(jwtToken)

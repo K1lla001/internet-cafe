@@ -11,7 +11,6 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
 
     private String userId;
@@ -24,6 +23,4 @@ public class UserResponse {
     private @Nullable Boolean isMember;
     private String role;
     private FileResponse fileResponse;
-
-
 }

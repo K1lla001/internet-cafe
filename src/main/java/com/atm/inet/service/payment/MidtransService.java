@@ -2,6 +2,7 @@ package com.atm.inet.service.payment;
 
 import com.atm.inet.model.response.OrderDetailRespose;
 import com.atm.inet.model.response.PaymentResponse;
+import com.midtrans.Midtrans;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,8 @@ public class MidtransService {
     @Transactional(rollbackOn = Exception.class)
     public PaymentResponse requestTransaction(OrderDetailRespose respose) {
 
+        Midtrans.serverKey = serverKey;
+
         String apiUrl = "https://app.sandbox.midtrans.com/snap/v1/transactions";
 
         HttpHeaders headers = new HttpHeaders();
@@ -49,6 +52,7 @@ public class MidtransService {
             String responseBody = responseEntity.getBody();
 
            JSONObject body = new JSONObject(responseBody);
+
 
            log.info("JSON RESPONSE DARI MIDTRANS SERVICE : {}", body);
 

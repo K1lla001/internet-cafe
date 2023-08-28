@@ -110,7 +110,9 @@ public class ComputerServiceImpl implements ComputerService {
     @Override
     public String deleteById(String id) {
         Computer computer = getComputerById(id);
-        computerImageService.deleteAll(computer.getType().getComputerImages());
+        if(!computer.getType().getComputerImages().isEmpty()){
+            computerImageService.deleteAll(computer.getType().getComputerImages());
+        }
         computer.setCode("");
         computer.setStatus(false);
         computerRepository.save(computer);

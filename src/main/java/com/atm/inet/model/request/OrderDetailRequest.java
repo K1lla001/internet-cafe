@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class OrderDetailRequest {
 
-    private String costumerId;
+    private String customerId;
     private String typeId;
     private Integer duration;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
