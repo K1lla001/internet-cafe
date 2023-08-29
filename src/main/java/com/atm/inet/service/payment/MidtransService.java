@@ -103,11 +103,15 @@ public class MidtransService {
         expiration.put("duration", 2);
         expiration.put("unit", "minute");
 
+        Map<String, Object> callBack = new HashMap<>();
+        callBack.put("finish", "https://infoloker.karawangkab.go.id/");
+
         Map<String, Object> transRequest = new HashMap<>();
         transRequest.put("transaction_details", transDetail);
         transRequest.put("item_details", items);
         transRequest.put("customer_details", customer);
         transRequest.put("expiry", expiration);
+        transRequest.put("callbacks", callBack);
         return transRequest;
     }
 
