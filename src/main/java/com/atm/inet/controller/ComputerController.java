@@ -1,5 +1,6 @@
 package com.atm.inet.controller;
 
+import com.atm.inet.entity.computer.Computer;
 import com.atm.inet.entity.constant.ECategory;
 import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.common.ComputerSearch;
@@ -33,7 +34,7 @@ public class ComputerController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<NewComputerResponse>> addComputer(
             @RequestPart(name = "computer")ComputerRequest request,
-            @RequestPart(name = "images") List<MultipartFile> multipartFileList
+            @RequestPart(name = "image") MultipartFile multipartFileList
             ){
         NewComputerResponse savedComputer = computerService.save(request, multipartFileList);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -86,12 +87,12 @@ public class ComputerController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<ComputerResponse>> getById(@PathVariable String id){
-        ComputerResponse response = computerService.getById(id);
+        ComputerResponse computer = computerService.getById(id);
         return ResponseEntity.ok(
                 CommonResponse.<ComputerResponse>builder()
                         .statusCode(HttpStatus.OK.value())
                         .message("Successfully get data!")
-                        .data(response)
+                        .data(computer)
                         .build()
         );
     }

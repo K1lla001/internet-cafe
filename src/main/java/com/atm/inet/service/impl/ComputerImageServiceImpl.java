@@ -52,13 +52,4 @@ public class ComputerImageServiceImpl implements ComputerImageService {
         computerImageRepository.delete(image);
         return id;
     }
-
-    @Override
-    public void deleteAll(List<ComputerImage> imageList) {
-        if(!imageList.isEmpty()){
-            imageList.forEach(computerImage ->
-                    baseFileService.delete(computerImage.getPath())
-            );
-        }
-    }
 }

@@ -7,6 +7,7 @@ public interface TypePriceService {
 
     TypePrice findByTypeId(String id);
 
+    TypePrice updatePrice(TypePrice typePrice);
 
 
 }

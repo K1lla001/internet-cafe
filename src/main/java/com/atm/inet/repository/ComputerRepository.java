@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface ComputerRepository extends JpaRepository<Computer, String>, JpaSpecificationExecutor<Computer>{
-
     Optional<Computer> findByType_Id(String id);
 }

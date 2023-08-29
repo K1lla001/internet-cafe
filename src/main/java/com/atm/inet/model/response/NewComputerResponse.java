@@ -16,12 +16,8 @@ public class NewComputerResponse {
     String id;
     String name;
     String code;
-    String category;
-    List<TypePriceResponse> price;
-    String processor;
-    String ram;
-    String monitor;
-    String ssd;
-    String vga;
+    Boolean status;
+    TypeResponse category;
+    ComputerSpecResponse computerSpec;
 
 }

@@ -17,4 +17,9 @@ public class ComputerSpecServiceImpl implements ComputerSpecService {
     public ComputerSpec add(ComputerSpec spec) {
         return computerSpecRepository.save(spec);
     }
+
+    @Override
+    public ComputerSpec findByComputerId(String id) {
+        return null;
+    }
 }

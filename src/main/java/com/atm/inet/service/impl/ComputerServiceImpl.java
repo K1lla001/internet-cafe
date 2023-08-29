@@ -1,10 +1,10 @@
 package com.atm.inet.service.impl;
 
-import com.atm.inet.entity.Customer;
 import com.atm.inet.entity.computer.*;
 import com.atm.inet.entity.constant.ECategory;
 import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.request.ComputerRequest;
+import com.atm.inet.model.request.ComputerUpdateRequest;
 import com.atm.inet.model.response.*;
 import com.atm.inet.repository.ComputerRepository;
 import com.atm.inet.service.ComputerImageService;
@@ -12,7 +12,6 @@ import com.atm.inet.service.ComputerService;
 import com.atm.inet.service.ComputerSpecService;
 import com.atm.inet.service.TypeService;
 import com.atm.inet.utils.specification.ComputerSpecification;
-import com.atm.inet.utils.specification.CustomerSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -38,7 +37,7 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public NewComputerResponse save(ComputerRequest request, List<MultipartFile> multipartFiles) {
+    public NewComputerResponse save(ComputerRequest request, MultipartFile multipartFiles) {
 
         TypePrice typePrice = TypePrice.builder()
                 .price(request.getPrice())
@@ -49,12 +48,10 @@ public class ComputerServiceImpl implements ComputerService {
 
         typePrice.setType(type);
 
-        List<ComputerImage> computerImages = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-            ComputerImage computerImage = computerImageService.create(type, multipartFile);
-            computerImages.add(computerImage);
-        }
-        type.setComputerImages(computerImages);
+
+        ComputerImage computerImage = computerImageService.create(type, multipartFiles);
+
+        type.setComputerImage(computerImage);
 
         ComputerSpec computerSpec = ComputerSpec.builder()
                 .processor(request.getProcessor())
@@ -76,6 +73,10 @@ public class ComputerServiceImpl implements ComputerService {
 
         computerRepository.saveAndFlush(computer);
 
+
+
+
+
         return generateNewComputerResponse(computer, type, computerSpec);
     }
 
@@ -87,12 +88,22 @@ public class ComputerServiceImpl implements ComputerService {
     }
 
     @Override
-    public ComputerResponse updateComputer(ComputerRequest updateComputer) {
+    public ComputerResponse updateComputer(ComputerUpdateRequest updateComputer) {
         Computer computer = getComputerById(updateComputer.getId());
+
+        ComputerSpec spec = ComputerSpec.builder()
+                .processor(updateComputer.getComputerSpec().getProcessor())
+                .ram(updateComputer.getComputerSpec().getRam())
+                .monitor(updateComputer.getComputerSpec().getMonitor())
+                .ssd(updateComputer.getComputerSpec().getSsd())
+                .vga(updateComputer.getComputerSpec().getVga())
+                .build();
+
         computer.setName(updateComputer.getName());
         computer.setCode(updateComputer.getCode());
+        computer.setSpecification(spec);
 
-        return null;
+        return generateComputerResponse(computer);
     }
 
 
@@ -103,26 +114,33 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Override
     public ComputerResponse getById(String id) {
-        Computer computer = getComputerById(id);
-       return generateComputerResponse(computer);
+        Computer computer = computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
+        return generateComputerResponse(computer);
     }
 
     @Override
     public String deleteById(String id) {
         Computer computer = getComputerById(id);
-        if(!computer.getType().getComputerImages().isEmpty()){
-            computerImageService.deleteAll(computer.getType().getComputerImages());
+
+        if(computer.getType().getComputerImage() != null){
+            computerImageService.deleteById(computer.getType().getComputerImage().getId());
         }
+
         computer.setCode("");
         computer.setStatus(false);
         computerRepository.save(computer);
         return id;
     }
 
+    @Override
+    public Resource downloadComputerImg(String id) {
+        return computerImageService.downloadImage(id);
+    }
+
+
     private Computer getComputerById(String id) {
         return computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
     }
-
     private ComputerResponse generateComputerResponse(Computer computer) {
         List<TypePriceResponse> priceResponses = computer.getType().getTypePrices().stream()
                 .map(typePrice -> TypePriceResponse.builder()
@@ -136,8 +154,19 @@ public class ComputerServiceImpl implements ComputerService {
                 .id(computer.getType().getId())
                 .category(computer.getType().getCategory().name())
                 .prices(priceResponses)
-                .images(generateFileResponse(computer.getType()))
+                .image(generateFileResponse(computer.getType()))
                 .build();
+
+
+        ComputerSpecResponse specResponse = ComputerSpecResponse.builder()
+                .id(computer.getSpecification().getId())
+                .processor(computer.getSpecification().getProcessor())
+                .ram(computer.getSpecification().getRam())
+                .monitor(computer.getSpecification().getMonitor())
+                .ssd(computer.getSpecification().getSsd())
+                .vga(computer.getSpecification().getVga())
+                .build();
+
 
         return ComputerResponse.builder()
                 .id(computer.getId())
@@ -145,24 +174,17 @@ public class ComputerServiceImpl implements ComputerService {
                 .code(computer.getCode())
                 .type(typeResponse)
                 .status(computer.getStatus())
-                .specification(computer.getSpecification())
+                .specification(specResponse)
                 .build();
     }
 
-    private List<FileResponse> generateFileResponse(Type type) {
-        return type.getComputerImages().stream().map(computerImage ->
-                FileResponse.builder()
-                        .id(computerImage.getId())
-                        .filename(computerImage.getName())
-                        .url("/api/v1/computers/image/" + computerImage.getId())
-                        .build()).toList();
+    private FileResponse generateFileResponse(Type type) {
+        return FileResponse.builder()
+                        .id(type.getComputerImage().getId())
+                        .filename(type.getComputerImage().getName())
+                        .url("/api/v1/computers/image/" + type.getComputerImage().getId())
+                        .build();
     }
-
-    @Override
-    public Resource downloadComputerImg(String id) {
-        return computerImageService.downloadImage(id);
-    }
-
     private NewComputerResponse generateNewComputerResponse(Computer computer, Type type, ComputerSpec computerSpec) {
 
         List<TypePriceResponse> priceResponses = new ArrayList<>();
@@ -175,17 +197,28 @@ public class ComputerServiceImpl implements ComputerService {
                         .build())
         );
 
-        return NewComputerResponse.builder()
-                .id(computer.getId())
-                .name(computer.getName())
-                .code(computer.getCode())
+        TypeResponse typeResponse = TypeResponse.builder()
+                .id(type.getId())
                 .category(type.getCategory().name())
-                .price(priceResponses)
+                .prices(priceResponses)
+                .build();
+
+        ComputerSpecResponse specResponse = ComputerSpecResponse.builder()
+                .id(computerSpec.getId())
                 .processor(computerSpec.getProcessor())
                 .ram(computerSpec.getRam())
                 .monitor(computerSpec.getMonitor())
                 .ssd(computerSpec.getSsd())
                 .vga(computerSpec.getVga())
+                .build();
+
+        return NewComputerResponse.builder()
+                .id(computer.getId())
+                .name(computer.getName())
+                .code(computer.getCode())
+                .status(computer.getStatus())
+                .category(typeResponse)
+                .computerSpec(specResponse)
                 .build();
     }
 }

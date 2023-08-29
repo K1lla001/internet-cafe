@@ -33,9 +33,8 @@ public class Type extends Auditable<String> {
     @JsonManagedReference
     private List<TypePrice> typePrices;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<ComputerImage> computerImages;
+    @OneToOne(targetEntity = ComputerImage.class, cascade = CascadeType.ALL)
+    private ComputerImage computerImage;
 
     public List<TypePrice> getTypePrices() {
         return Collections.unmodifiableList(typePrices);
@@ -45,15 +44,6 @@ public class Type extends Auditable<String> {
         this.typePrices.add(typePrices);
     }
 
-    public List<ComputerImage> getComputerImages() {
-        return Collections.unmodifiableList(computerImages);
-    }
 
-    public void addComputerImage(ComputerImage ComputerImage) {
-        computerImages.add(ComputerImage);
-    }
 
-    public void addAllComputerImage(List<ComputerImage> ComputerImages) {
-        this.computerImages.addAll(ComputerImages);
-    }
 }

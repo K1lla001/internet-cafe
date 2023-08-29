@@ -29,7 +29,7 @@ public class Computer extends Auditable<String> {
 
     private Boolean status;
 
-    @OneToOne(targetEntity = ComputerSpec.class)
+    @OneToOne(targetEntity = ComputerSpec.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "computer_spec_id")
     private ComputerSpec specification;
 

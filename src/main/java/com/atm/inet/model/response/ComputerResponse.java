@@ -17,6 +17,6 @@ public class ComputerResponse {
     private String code;
     private boolean status;
     private TypeResponse type;
-    private ComputerSpec specification;
+    private ComputerSpecResponse specification;
 
 }

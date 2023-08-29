@@ -18,6 +18,4 @@ public interface ComputerImageService {
 
     String deleteById(String id);
 
-    void deleteAll(List<ComputerImage> imageList);
-
 }
