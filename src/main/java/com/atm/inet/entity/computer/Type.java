@@ -34,6 +34,7 @@ public class Type extends Auditable<String> {
     private List<TypePrice> typePrices;
 
     @OneToOne(targetEntity = ComputerImage.class, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private ComputerImage computerImage;
 
     public List<TypePrice> getTypePrices() {

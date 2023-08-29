@@ -7,35 +7,25 @@ import com.atm.inet.entity.computer.Type;
 import com.atm.inet.entity.computer.TypePrice;
 import com.atm.inet.entity.constant.EStatus;
 import com.atm.inet.model.request.OrderDetailRequest;
+import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.model.response.CustomerResponse;
 import com.atm.inet.model.response.OrderDetailRespose;
 import com.atm.inet.model.response.PaymentResponse;
 import com.atm.inet.repository.OrderDetailRepository;
 import com.atm.inet.service.*;
 import com.atm.inet.service.payment.MidtransService;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.midtrans.Config;
-import com.midtrans.httpclient.error.MidtransError;
-import com.midtrans.service.MidtransSnapApi;
-import com.midtrans.service.impl.MidtransSnapApiImpl;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -58,18 +48,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
 
         CustomerResponse customerResponse = customerService.findById(request.getCustomerId());
-        Type type = typeService.findById(request.getTypeId());
-        TypePrice price = typePriceService.findByTypeId(type.getId());
-        Computer computer = computerService.findByTypeId(type.getId());
+
+        Computer computer = computerService.getByComputerId(request.getComputerId());
+        TypePrice price = typePriceService.findByTypeId(computer.getType().getId());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomerResponse authenticateCustomer = customerService.authenticationCustomer(authentication);
 
         if(!customerResponse.getId().equals(authenticateCustomer.getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed here!");
-
-
-        System.out.println(customerResponse.getId().equals(authenticateCustomer.getId()));
-
 
         log.info("START TRANSACTION");
 
@@ -93,7 +79,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         OrderDetail orderDetail = OrderDetail.builder()
                 .customer(customer)
                 .status(EStatus.PENDING)
-                .type(type)
+                .computer(computer)
                 .duration(request.getDuration())
                 .bookingDate(request.getBookingDate())
                 .endBookingDate(request.getBookingDate().plusHours(request.getDuration()))
@@ -106,7 +92,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 .orderId(orderDetail.getId())
                 .computerCode(computer.getCode())
                 .computerName(computer.getName())
-                .type(type.getCategory().name())
+                .type(computer.getType().getCategory().name())
                 .price(price.getPrice() * orderDetail.getDuration())
                 .status(orderDetail.getStatus().name())
                 .customerFirstName(customer.getFirstName())

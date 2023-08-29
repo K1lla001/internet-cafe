@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class OrderDetailRequest {
 
     private String customerId;
-    private String typeId;
+    private String computerId;
     private Integer duration;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookingDate;

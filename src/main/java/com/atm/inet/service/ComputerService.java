@@ -18,13 +18,12 @@ public interface ComputerService {
     Page<ComputerResponse> getAll(Pageable pageable, ComputerSearch computerSearch);
     ComputerResponse updateComputer(ComputerUpdateRequest updateComputer);
 
-    Computer findByTypeId(String id);
-
     ComputerResponse getById(String id);
+
+    Computer getByComputerId(String id);
 
     String deleteById(String id);
 
-    Resource downloadComputerImg(String id);
 
 
 

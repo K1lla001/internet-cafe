@@ -6,6 +6,7 @@ import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.common.PagingResponse;
 import com.atm.inet.model.request.ComputerRequest;
+import com.atm.inet.model.request.ComputerUpdateRequest;
 import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.model.response.NewComputerResponse;
 import com.atm.inet.service.ComputerService;
@@ -109,12 +110,25 @@ public class ComputerController {
         );
     }
 
-    @GetMapping(path = "/image/{imageId}")
-    public ResponseEntity<?> downloadImg(@PathVariable(name = "imageId") String id){
-        Resource resource = computerService.downloadComputerImg(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.IMAGE_PNG)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+    @PutMapping
+    public ResponseEntity<CommonResponse<ComputerResponse>> updateComputer(@RequestBody ComputerUpdateRequest update) {
+
+        ComputerResponse computerResponse = computerService.updateComputer(update);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.<ComputerResponse>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully update Computer")
+                        .data(computerResponse)
+                        .build()
+        );
     }
+//
+//    @GetMapping(path = "/image/{imageId}")
+//    public ResponseEntity<?> downloadImg(@PathVariable(name = "imageId") String id){
+//        Resource resource = computerService.downloadComputerImg(id);
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .contentType(MediaType.IMAGE_PNG)
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+//    }
 
 }

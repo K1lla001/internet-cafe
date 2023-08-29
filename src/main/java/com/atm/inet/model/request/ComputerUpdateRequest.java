@@ -14,7 +14,9 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class ComputerUpdateRequest {
 
+    @NotBlank(message = "ID Can not be empty")
     private String id;
+    @NotBlank(message = "ID Can not be empty")
     private String name;
     private String code;
     private ComputerSpecRequest computerSpec;

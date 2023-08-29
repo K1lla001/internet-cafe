@@ -13,6 +13,7 @@ import com.atm.inet.service.ComputerSpecService;
 import com.atm.inet.service.TypeService;
 import com.atm.inet.utils.specification.ComputerSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ComputerServiceImpl implements ComputerService {
 
@@ -73,25 +75,30 @@ public class ComputerServiceImpl implements ComputerService {
 
         computerRepository.saveAndFlush(computer);
 
-
-
-
-
         return generateNewComputerResponse(computer, type, computerSpec);
+    }
+
+    @Override
+    public Computer getByComputerId(String id) {
+        return computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
+
     }
 
     @Override
     public Page<ComputerResponse> getAll(Pageable pageable, ComputerSearch computerSearch) {
         Specification<Computer> computerSpecification = ComputerSpecification.getSpecification(computerSearch);
         Page<Computer> computers = computerRepository.findAll(computerSpecification, pageable);
+        log.warn("COMPUTERS FROM REPOSITORY : {}", computers);
         return computers.map(this::generateComputerResponse);
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ComputerResponse updateComputer(ComputerUpdateRequest updateComputer) {
         Computer computer = getComputerById(updateComputer.getId());
 
         ComputerSpec spec = ComputerSpec.builder()
+                .id(computer.getSpecification().getId())
                 .processor(updateComputer.getComputerSpec().getProcessor())
                 .ram(updateComputer.getComputerSpec().getRam())
                 .monitor(updateComputer.getComputerSpec().getMonitor())
@@ -103,13 +110,9 @@ public class ComputerServiceImpl implements ComputerService {
         computer.setCode(updateComputer.getCode());
         computer.setSpecification(spec);
 
+        computerRepository.save(computer);
+
         return generateComputerResponse(computer);
-    }
-
-
-    @Override
-    public Computer findByTypeId(String id) {
-        return computerRepository.findByType_Id(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer Not Found!"));
     }
 
     @Override
@@ -131,12 +134,6 @@ public class ComputerServiceImpl implements ComputerService {
         computerRepository.save(computer);
         return id;
     }
-
-    @Override
-    public Resource downloadComputerImg(String id) {
-        return computerImageService.downloadImage(id);
-    }
-
 
     private Computer getComputerById(String id) {
         return computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
