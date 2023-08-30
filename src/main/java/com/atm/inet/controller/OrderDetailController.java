@@ -50,11 +50,23 @@ public class OrderDetailController {
                         .build()
         );
     }
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    @GetMapping(path = "/my-list")
     public ResponseEntity<CommonResponse<List<OrderDetailRespose>>> getAll() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<OrderDetailRespose> orderDetails = orderDetailService.getAll(authentication);
+
+        return ResponseEntity.ok(
+                CommonResponse.<List<OrderDetailRespose>>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully get data")
+                        .data(orderDetails)
+                        .build()
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<OrderDetailRespose>>> getAllAdmin() {
+        List<OrderDetailRespose> orderDetails = orderDetailService.getAll();
 
         return ResponseEntity.ok(
                 CommonResponse.<List<OrderDetailRespose>>builder()

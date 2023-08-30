@@ -18,4 +18,6 @@ public interface OrderDetailService {
 
       List<OrderDetailRespose> getAll(Authentication authentication);
 
+      List<OrderDetailRespose> getAll();
+
 }

@@ -209,5 +209,31 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         return orderDetailResposes;
     }
 
+    @Override
+    public List<OrderDetailRespose> getAll() {
 
+        List<OrderDetail> orderDetails = orderDetailRepository.findAll();
+
+        List<OrderDetailRespose> orderDetailResposes = new ArrayList<>();
+
+        orderDetails.forEach(orderDetail -> {
+            OrderDetailRespose response = OrderDetailRespose.builder()
+                    .orderId(orderDetail.getId())
+                    .computerCode(orderDetail.getComputer().getCode())
+                    .computerName(orderDetail.getComputer().getName())
+                    .type(orderDetail.getComputer().getType().getCategory().name())
+                    .price(orderDetail.getComputer().getType().getTypePrices().get(0).getPrice() * orderDetail.getDuration())
+                    .status(orderDetail.getStatus().name())
+                    .customerFirstName(orderDetail.getCustomer().getFirstName())
+                    .customerLastName(orderDetail.getCustomer().getLastName())
+                    .customerPhoneNumber(orderDetail.getCustomer().getPhoneNumber())
+                    .customerEmail(orderDetail.getCustomer().getEmail())
+                    .startBookingDate(orderDetail.getBookingDate())
+                    .endBookingDate(orderDetail.getEndBookingDate())
+                    .build();
+            orderDetailResposes.add(response);
+        });
+
+        return orderDetailResposes;
+    }
 }
