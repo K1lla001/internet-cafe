@@ -41,7 +41,7 @@ public class Type extends Auditable<String> {
         return Collections.unmodifiableList(typePrices);
     }
 
-    public void setTypePrices(TypePrice typePrices) {
+    public void addTypePrices(TypePrice typePrices) {
         this.typePrices.add(typePrices);
     }
 

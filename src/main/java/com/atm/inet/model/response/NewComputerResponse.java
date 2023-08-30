@@ -16,7 +16,7 @@ public class NewComputerResponse {
     String id;
     String name;
     String code;
-    Boolean status;
+    String status;
     TypeResponse category;
     ComputerSpecResponse computerSpec;
 

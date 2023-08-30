@@ -1,6 +1,7 @@
 package com.atm.inet.entity.computer;
 
 import com.atm.inet.entity.auditing.Auditable;
+import com.atm.inet.entity.constant.EStatus;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -27,7 +28,8 @@ public class Computer extends Auditable<String> {
     @Column(name = "pc_code", unique = true)
     private String code;
 
-    private Boolean status;
+    @Enumerated(EnumType.STRING)
+    private EStatus status;
 
     @OneToOne(targetEntity = ComputerSpec.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "computer_spec_id")

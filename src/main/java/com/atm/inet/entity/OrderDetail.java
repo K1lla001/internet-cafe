@@ -2,8 +2,7 @@ package com.atm.inet.entity;
 
 
 import com.atm.inet.entity.computer.Computer;
-import com.atm.inet.entity.computer.Type;
-import com.atm.inet.entity.constant.EStatus;
+import com.atm.inet.entity.constant.EStatusOrder;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -54,6 +53,6 @@ public class OrderDetail {
 
     @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
-    private EStatus status;
+    private EStatusOrder status;
 
 }

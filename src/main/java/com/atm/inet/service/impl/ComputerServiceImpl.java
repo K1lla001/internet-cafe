@@ -2,6 +2,7 @@ package com.atm.inet.service.impl;
 
 import com.atm.inet.entity.computer.*;
 import com.atm.inet.entity.constant.ECategory;
+import com.atm.inet.entity.constant.EStatus;
 import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.request.ComputerRequest;
 import com.atm.inet.model.request.ComputerUpdateRequest;
@@ -38,6 +39,11 @@ public class ComputerServiceImpl implements ComputerService {
     private final TypeService typeService;
 
     @Override
+    public Computer saveByComputer(Computer computer) {
+        return computerRepository.save(computer);
+    }
+
+    @Override
     @Transactional(rollbackOn = Exception.class)
     public NewComputerResponse save(ComputerRequest request, MultipartFile multipartFiles) {
 
@@ -68,7 +74,7 @@ public class ComputerServiceImpl implements ComputerService {
         Computer computer = Computer.builder()
                 .name(request.getName())
                 .code(request.getCode())
-                .status(true)
+                .status(EStatus.FREE)
                 .specification(computerSpec)
                 .type(type)
                 .build();
@@ -96,6 +102,8 @@ public class ComputerServiceImpl implements ComputerService {
     @Transactional(rollbackOn = Exception.class)
     public ComputerResponse updateComputer(ComputerUpdateRequest updateComputer) {
         Computer computer = getComputerById(updateComputer.getId());
+
+        if(!computer.getStatus().equals(EStatus.FREE)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you can't update this PC right now!");
 
         ComputerSpec spec = ComputerSpec.builder()
                 .id(computer.getSpecification().getId())
@@ -130,7 +138,7 @@ public class ComputerServiceImpl implements ComputerService {
         }
 
         computer.setCode("");
-        computer.setStatus(false);
+        computer.setStatus(EStatus.DELETED);
         computerRepository.save(computer);
         return id;
     }
@@ -138,7 +146,7 @@ public class ComputerServiceImpl implements ComputerService {
     private Computer getComputerById(String id) {
         return computerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Computer not found!"));
     }
-    private ComputerResponse generateComputerResponse(Computer computer) {
+    public ComputerResponse generateComputerResponse(Computer computer) {
         List<TypePriceResponse> priceResponses = computer.getType().getTypePrices().stream()
                 .map(typePrice -> TypePriceResponse.builder()
                         .id(typePrice.getId())
@@ -170,7 +178,7 @@ public class ComputerServiceImpl implements ComputerService {
                 .name(computer.getName())
                 .code(computer.getCode())
                 .type(typeResponse)
-                .status(computer.getStatus())
+                .status(computer.getStatus().name())
                 .specification(specResponse)
                 .build();
     }
@@ -179,7 +187,7 @@ public class ComputerServiceImpl implements ComputerService {
         return FileResponse.builder()
                         .id(type.getComputerImage().getId())
                         .filename(type.getComputerImage().getName())
-                        .url("/api/v1/computers/image/" + type.getComputerImage().getId())
+                        .url("/api/v1/types/image/" + type.getComputerImage().getId())
                         .build();
     }
     private NewComputerResponse generateNewComputerResponse(Computer computer, Type type, ComputerSpec computerSpec) {
@@ -213,7 +221,7 @@ public class ComputerServiceImpl implements ComputerService {
                 .id(computer.getId())
                 .name(computer.getName())
                 .code(computer.getCode())
-                .status(computer.getStatus())
+                .status(computer.getStatus().name())
                 .category(typeResponse)
                 .computerSpec(specResponse)
                 .build();

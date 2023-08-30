@@ -13,12 +13,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ComputerService {
 
+    Computer saveByComputer(Computer computer);
     NewComputerResponse save(ComputerRequest request, MultipartFile computerImage);
 
     Page<ComputerResponse> getAll(Pageable pageable, ComputerSearch computerSearch);
     ComputerResponse updateComputer(ComputerUpdateRequest updateComputer);
 
     ComputerResponse getById(String id);
+
+    ComputerResponse generateComputerResponse(Computer computer);
 
     Computer getByComputerId(String id);
 

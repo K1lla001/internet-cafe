@@ -15,7 +15,7 @@ public class ComputerResponse {
     private String id;
     private String name;
     private String code;
-    private Boolean status;
+    private String status;
     private TypeResponse type;
     private ComputerSpecResponse specification;
 

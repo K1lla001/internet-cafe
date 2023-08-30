@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
@@ -63,8 +64,33 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public TypeResponse update(TypeRequest request) {
-        return null;
+    public TypeResponse update(TypeRequest request, MultipartFile multipartFile) {
+        Type type = findTypeById(request.getId());
+        TypePrice typePrice = type.getTypePrices().stream().filter(TypePrice::getIsActive).findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Price not found!"));
+        typePrice.setIsActive(false);
+
+        TypePrice prices = TypePrice.builder()
+                .price(request.getPrice())
+                .isActive(true)
+                .build();
+
+        type.addTypePrices(prices);
+
+        if(multipartFile.isEmpty()) {
+            log.warn("INFO DARI TYPE SERVICE KALAU GAMBAR EMPTY: {} ", type);
+        }
+
+        log.warn("INFO DARI TYPE SERVICE KALAU ADA GAMBAR: {} ", type);
+        ComputerImage computerImage = computerImageService.create(type, multipartFile);
+
+        type.setComputerImage(computerImage);
+
+        prices.setType(type);
+
+        typeRepository.save(type);
+
+        return typeResponseGenerator(type);
+
     }
 
     @Override
