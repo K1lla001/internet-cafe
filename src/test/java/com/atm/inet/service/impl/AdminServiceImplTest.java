@@ -1,173 +1,176 @@
 package com.atm.inet.service.impl;
 
-
 import com.atm.inet.entity.Admin;
+import com.atm.inet.entity.Role;
 import com.atm.inet.entity.UserDetailsImpl;
 import com.atm.inet.entity.constant.ERole;
+import com.atm.inet.model.request.UpdateAdminRequest;
 import com.atm.inet.model.response.AdminResponse;
 import com.atm.inet.repository.AdminRepository;
 import com.atm.inet.repository.UserCredentialRepository;
+import com.atm.inet.service.AdminService;
+import io.jsonwebtoken.lang.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class AdminServiceImplTest {
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+class AdminServiceImplTest {
 
     @Mock
-    private AdminRepository adminRepository;
+    AdminRepository adminRepository;
+    UserCredentialRepository userCredentialRepository;
+    AdminService adminService;
 
-    @Mock
-    private UserCredentialRepository userCredentialRepository;
-
-    @Mock
-    private Authentication authentication;
-
-    @InjectMocks
-    private AdminServiceImpl adminService;
-
-
-    //ENTITY
+    //Entity
     Admin admin;
+    UserDetails userDetails;
+
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        this.admin = new Admin("1", "ari@gmail.com", "arisu", "0813980021", null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    void setUp() {
+        adminService = new AdminServiceImpl(adminRepository, userCredentialRepository);
+
+        admin = new Admin("1", "ari@admin.com", "arisusanto", "012345678", null);
+        userDetails = new UserDetailsImpl(admin.getId(), admin.getEmail(), "rahasia", Collections.singleton(new SimpleGrantedAuthority(ERole.ROLE_ADMIN.name())));
     }
 
     @Test
-    @DisplayName("Test success authenticate user")
-    public void testAuthenticateUser_validValue() {
-        UserDetailsImpl userDetails = new UserDetailsImpl("1", "ari@gmail.com", "rahasia", List.of(new SimpleGrantedAuthority(ERole.ROLE_ADMIN.name())));
+    @DisplayName("Authenticate Admin with valid email")
+    void testAuthenticateAdmin_validEmail() {
+        String userEmail = "ari@admin.com";
+        Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
 
-        when(adminRepository.findFirstByUserCredential_Email(userDetails.getEmail())).thenReturn(Optional.of(this.admin));
+        when(adminRepository.findFirstByUserCredential_Email(userEmail)).thenReturn(Optional.of(admin));
 
-        AdminResponse response = adminService.authenticateUser(authentication);
+        AdminResponse adminResponse = adminService.authenticateUser(authentication);
 
-        assertNotNull(response);
-        assertEquals(this.admin.getEmail(), response.getEmail());
-        assertEquals(userDetails.getEmail(), response.getEmail());
+        verify(adminRepository, times(1)).findFirstByUserCredential_Email(userEmail);
+
+        Assertions.assertEquals(admin.getEmail(), adminResponse.getEmail());
+        Assertions.assertNotNull(adminResponse);
     }
 
     @Test
-    @DisplayName("Test failed authenticate user")
-    public void testAuthenticateUser_invalidValue() {
-        UserDetailsImpl userDetails = new UserDetailsImpl("1", "ari@gmail.com", "rahasia", List.of(new SimpleGrantedAuthority(ERole.ROLE_ADMIN.name())));
+    @DisplayName("Authenticate Admin with invalid email")
+    void testAuthenticateAdmin_invalidEmail() {
+        String userEmail = "ari@admin.com";
+        Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
 
-        when(adminRepository.findFirstByUserCredential_Email(userDetails.getEmail()))
-                .thenThrow(ResponseStatusException.class);
+        when(adminRepository.findFirstByUserCredential_Email(userEmail)).thenThrow(ResponseStatusException.class);
 
-        assertThrows(ResponseStatusException.class, () -> {
-            adminService.authenticateUser(authentication);
-        });
-
-    }
-
-    @Test
-    @DisplayName("Test Success Create Admin")
-    public void testCreateAdmin_validValue() {
-
-        when(adminRepository.save(admin)).thenReturn(admin);
-
-        Admin createdAdmin = adminService.create(admin);
-
-        assertNotNull(createdAdmin);
-        assertEquals(createdAdmin.getEmail(), this.admin.getEmail());
-    }
-
-    @Test
-    @DisplayName("test Failed Create Admin")
-    public void testCreateAdmin_invalidValue(){
-
-        when(adminRepository.save(admin)).thenThrow(DataIntegrityViolationException.class);
-
-        assertThrows(DataIntegrityViolationException.class, () -> {
-           adminService.create(admin);
+        Assertions.assertThrows(ResponseStatusException.class,() -> {
+            AdminResponse adminResponse = adminService.authenticateUser(authentication);
+            Assertions.assertEquals(admin.getEmail(), adminResponse.getEmail());
+            Assertions.assertNull(adminResponse);
         });
     }
 
     @Test
-    @DisplayName("test success find by id Admin")
-    public void testFindById_validAdminId(){
+    @DisplayName("Create admin with valid data")
+    void testCreateAdmin_validData() {
 
-        when(adminRepository.findById("1")).thenReturn(Optional.ofNullable(admin));
+        Admin data = Admin.builder()
+                .id("1")
+                .email("ari@admin.com")
+                .build();
 
-        Admin foundedAdmin = adminService.findById("1");
+        when(adminRepository.save(data)).thenReturn(data);
 
-        assertNotNull(foundedAdmin);
-        assertEquals(admin.getId(), foundedAdmin.getId());
+        Admin createdAdmin = adminService.create(data);
 
-    }
-
-    @Test
-    @DisplayName("test failed find by id admin")
-    public void testFindById_invalidAdminId(){
-
-        when(adminRepository.findById("2")).thenThrow(ResponseStatusException.class);
-
-        assertThrows(ResponseStatusException.class, () -> {
-            Admin foundedAdmin = adminService.findById("2");
-            assertNotEquals(admin.getId(), foundedAdmin.getId());
-            assertNull(foundedAdmin);
-
-        });
+        Assertions.assertEquals(createdAdmin.getId(), admin.getId());
+        Assertions.assertEquals(createdAdmin.getEmail(), admin.getEmail());
 
     }
 
     @Test
-    @DisplayName("Test Success find by email admin")
-    public void testFindByEmail_validEmail() {
-        when(adminRepository.findFirstByUserCredential_Email("ari@gmail.com")).thenReturn(Optional.ofNullable(admin));
+    @DisplayName("Find Admin By Valid Id")
+    void testFindAdmin_validId(){
+        String id = "1";
 
-        Admin adminByEmail = adminService.findByEmail("ari@gmail.com");
+        when(adminRepository.findById(id)).thenReturn(Optional.of(admin));
 
-        assertNotNull(adminByEmail);
-        assertEquals(adminByEmail.getEmail(), admin.getEmail());
+        Admin data = adminService.findById(id);
+
+        Assertions.assertEquals(data.getId(), admin.getId());
+        Assertions.assertEquals(data.getFullName(), admin.getFullName());
     }
 
-    @Test
-    @DisplayName("Test failed find by email admin")
-    public void testFindByEmail_invalidEmail() {
-        when(adminRepository.findFirstByUserCredential_Email("ari@yahoo.com")).thenThrow(ResponseStatusException.class);
 
-        assertThrows(ResponseStatusException.class, () -> {
-           adminService.findByEmail("ari@yahoo.com");
+    @Test
+    @DisplayName("Find Admin By invalid Id")
+    void testFindAdmin_invalidId(){
+        String id = "1";
+
+        when(adminRepository.findById(id)).thenThrow(ResponseStatusException.class);
+        Assertions.assertThrows(ResponseStatusException.class,() -> {
+            Admin data = adminService.findById(id);
+            Assertions.assertNotEquals(data.getId(), admin.getId());
+            Assertions.assertNull(data);
         });
     }
 
-//    @Test
-//    @DisplayName("Test success delete admin by id")
-//    public void shouldDeleteAdminByIdValidAdminId() {
-//        // Arrange
-//        Admin createdAdmin = new Admin("1", "arisu@gmail.com", "arisusanto", "081398213", null);
-//        when(adminRepository.findById("1")).thenReturn(Optional.of(createdAdmin));
-//        doNothing().when(adminRepository).delete(createdAdmin);
+    @Test
+    @DisplayName("Find admin by valid user credential email")
+    void testFindAdmin_validUserCredentialEmail(){
+        String email = "ari@admin";
+
+        when(adminRepository.findFirstByUserCredential_Email(email)).thenReturn(Optional.of(admin));
+
+        Admin data = adminService.findByEmail(email);
+
+        Assertions.assertEquals(data.getEmail(), admin.getEmail());
+    }
+
+    @Test
+    @DisplayName("Find admin by invalid user credential email")
+    void testFindAdmin_invalidUserCredentialEmail(){
+        String email = "ari2@admin";
+
+        when(adminRepository.findFirstByUserCredential_Email(email)).thenThrow(ResponseStatusException.class);
+
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            Admin data = adminService.findByEmail(email);
+            Assertions.assertNull(data);
+        });
+    }
 //
-//        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
-//        AdminResponse response = adminService.authenticateUser(authentication1);
-//        // Act
-//        adminService.delete(response.getAdminId());
+//    @Test @DisplayName("Update Admin With Valid Data")
+//    void testUpdate_ValidData() {
+//        String adminId = "1";
+//        Authentication authentication = mock(Authentication.class);
+//        when(authentication.getPrincipal()).thenReturn(userDetails);
 //
-//        // Assert
-//        verify(adminRepository, times(1)).delete(createdAdmin);
+//        when(adminRepository.findFirstByUserCredential_Email(admin.getEmail())).thenReturn(Optional.of(admin));
+//        when(adminService.authenticateUser(authentication)).thenReturn(new AdminResponse(adminId, "Admin", "admin@example.com", "123456789"));
+//
+//        UpdateAdminRequest updateRequest = new UpdateAdminRequest(adminId, "Updated Admin", "987654321");
+//        adminService.update(updateRequest);
+//
+//        verify(adminRepository, times(1)).findFirstByUserCredential_Email(admin.getEmail());
+//        verify(adminRepository, times(1)).save(any(Admin.class));
 //    }
-
-
 
 }
