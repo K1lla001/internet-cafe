@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,20 +50,20 @@ public class OrderDetailController {
                         .build()
         );
     }
-
     @GetMapping
-    public ResponseEntity<CommonResponse<List<OrderDetail>>> getAll(){
-        List<OrderDetail> orderDetails = orderDetailService.getAll();
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    public ResponseEntity<CommonResponse<List<OrderDetailRespose>>> getAll() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<OrderDetailRespose> orderDetails = orderDetailService.getAll(authentication);
 
         return ResponseEntity.ok(
-                CommonResponse.<List<OrderDetail>>builder()
+                CommonResponse.<List<OrderDetailRespose>>builder()
                         .statusCode(HttpStatus.OK.value())
                         .message("Successfully get data")
                         .data(orderDetails)
                         .build()
         );
     }
-
 
 
 }

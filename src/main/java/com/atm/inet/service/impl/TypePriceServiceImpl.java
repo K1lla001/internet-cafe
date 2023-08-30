@@ -19,6 +19,12 @@ public class TypePriceServiceImpl implements TypePriceService {
     public TypePrice findByTypeId(String id) {
         return typePriceRepository.findByType_Id(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Price Not Found!"));    }
 
+
+    @Override
+    public TypePrice findByIsActive() {
+        return typePriceRepository.findFirstByIsActiveTrue().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "is Active price not found!"));
+    }
+
     @Override
     public TypePrice findById(String id) {
         return typePriceRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Type price not found!"));

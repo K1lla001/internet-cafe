@@ -43,11 +43,14 @@ public class TypeServiceImpl implements TypeService {
     }
 
     private TypeResponse typeResponseGenerator(Type type) {
-        List<TypePriceResponse> priceResponses = type.getTypePrices().stream().map(typePrice -> TypePriceResponse.builder()
-                .id(typePrice.getId())
-                .price(typePrice.getPrice())
-                .isActive(typePrice.getIsActive())
-                .build()).toList();
+        List<TypePriceResponse> priceResponses = type.getTypePrices().stream()
+                .filter(TypePrice::getIsActive)
+                .map(typePrice -> TypePriceResponse.builder()
+                        .id(typePrice.getId())
+                        .price(typePrice.getPrice())
+                        .isActive(typePrice.getIsActive())
+                        .build())
+                .toList();
 
         FileResponse image = FileResponse.builder()
                 .id(type.getComputerImage().getId())
@@ -106,6 +109,8 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public List<TypeResponse> getAll() {
         List<Type> types = typeRepository.findAll();
+
+
 
         List<TypeResponse> typeResponses = new ArrayList<>();
        types.forEach(type -> typeResponses.add(typeResponseGenerator(type)));

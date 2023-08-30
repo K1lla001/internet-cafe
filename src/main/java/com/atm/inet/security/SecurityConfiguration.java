@@ -45,6 +45,7 @@ public class SecurityConfiguration{
                 .authorizeRequests().antMatchers("/api/v1/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/computers/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/types/image/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
                 .antMatchers("/api/v1/midtrans/**").permitAll()
                 .anyRequest().authenticated().and()
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)

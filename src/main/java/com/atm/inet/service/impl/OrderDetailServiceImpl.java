@@ -2,6 +2,7 @@ package com.atm.inet.service.impl;
 
 import com.atm.inet.entity.Customer;
 import com.atm.inet.entity.OrderDetail;
+import com.atm.inet.entity.UserDetailsImpl;
 import com.atm.inet.entity.computer.*;
 import com.atm.inet.entity.constant.ECategory;
 import com.atm.inet.entity.constant.EStatus;
@@ -62,7 +63,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         if (request.getBookingDate().isBefore(LocalDateTime.now()) || request.getDuration() < 0)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Booking Date or Duration!");
-        if (computerResponse.getStatus().equalsIgnoreCase(EStatus.USED.name())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Computer Is Already Use");
+        if (computerResponse.getStatus().equalsIgnoreCase(EStatus.USED.name()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Computer Is Already Use");
 
         Customer customer = Customer.builder()
                 .id(customerResponse.getId())
@@ -172,9 +174,40 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public OrderDetail findById(String id) {
         return orderDetailRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction Data Not Found!"));
     }
-
     @Override
-    public List<OrderDetail> getAll() {
-        return orderDetailRepository.findAll();
+    public List<OrderDetailRespose> getAll(Authentication authentication) {
+        CustomerResponse customerResponse = customerService.authenticationCustomer(authentication);
+        List<OrderDetail> orderDetails;
+
+        if (customerResponse != null) { // Assuming customerService.authenticationCustomer returns customer details
+            String customerId = customerResponse.getId(); // Change this to the actual method to get customer ID from customerResponse
+            orderDetails = orderDetailRepository.findAllByCustomer_Id(customerId);
+        } else {
+            orderDetails = orderDetailRepository.findAll();
+        }
+
+        List<OrderDetailRespose> orderDetailResposes = new ArrayList<>();
+
+        orderDetails.forEach(orderDetail -> {
+            OrderDetailRespose response = OrderDetailRespose.builder()
+                    .orderId(orderDetail.getId())
+                    .computerCode(orderDetail.getComputer().getCode())
+                    .computerName(orderDetail.getComputer().getName())
+                    .type(orderDetail.getComputer().getType().getCategory().name())
+                    .price(orderDetail.getComputer().getType().getTypePrices().get(0).getPrice() * orderDetail.getDuration())
+                    .status(orderDetail.getStatus().name())
+                    .customerFirstName(orderDetail.getCustomer().getFirstName())
+                    .customerLastName(orderDetail.getCustomer().getLastName())
+                    .customerPhoneNumber(orderDetail.getCustomer().getPhoneNumber())
+                    .customerEmail(orderDetail.getCustomer().getEmail())
+                    .startBookingDate(orderDetail.getBookingDate())
+                    .endBookingDate(orderDetail.getEndBookingDate())
+                    .build();
+            orderDetailResposes.add(response);
+        });
+
+        return orderDetailResposes;
     }
+
+
 }

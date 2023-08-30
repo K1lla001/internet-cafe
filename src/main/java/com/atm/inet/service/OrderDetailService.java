@@ -4,6 +4,7 @@ import com.atm.inet.entity.OrderDetail;
 import com.atm.inet.model.request.OrderDetailRequest;
 import com.atm.inet.model.response.OrderDetailRespose;
 import com.atm.inet.model.response.PaymentResponse;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface OrderDetailService {
 
       OrderDetail findById(String id);
 
-      List<OrderDetail> getAll();
+      List<OrderDetailRespose> getAll(Authentication authentication);
 
 }

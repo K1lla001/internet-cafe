@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,9 @@ public class OrderDetailRespose {
     private String customerLastName;
     private String customerPhoneNumber;
     private String customerEmail;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private @Nullable LocalDateTime startBookingDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endBookingDate;
 
