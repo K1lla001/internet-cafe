@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
                             FileResponse.builder()
                                     .id(userCredential.getProfilePicture().getId())
                                     .filename(userCredential.getProfilePicture().getName())
-                                    .url("/api/users/profile-picture/" + userCredential.getProfilePicture().getId())
+                                    .url("/api/v1/users/profile-picture/" + userCredential.getProfilePicture().getId())
                                     .build(): null)
                     .build();
         } else {
