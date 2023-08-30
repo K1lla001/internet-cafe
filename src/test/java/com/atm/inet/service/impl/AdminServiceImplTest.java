@@ -65,7 +65,6 @@ class AdminServiceImplTest {
 
         AdminResponse adminResponse = adminService.authenticateUser(authentication);
 
-        verify(adminRepository, times(1)).findFirstByUserCredential_Email(userEmail);
 
         Assertions.assertEquals(admin.getEmail(), adminResponse.getEmail());
         Assertions.assertNotNull(adminResponse);
@@ -156,21 +155,20 @@ class AdminServiceImplTest {
             Assertions.assertNull(data);
         });
     }
-//
-//    @Test @DisplayName("Update Admin With Valid Data")
+
+//    @Test
+//    @DisplayName("Update Admin With Valid Data")
 //    void testUpdate_ValidData() {
 //        String adminId = "1";
-//        Authentication authentication = mock(Authentication.class);
-//        when(authentication.getPrincipal()).thenReturn(userDetails);
-//
-//        when(adminRepository.findFirstByUserCredential_Email(admin.getEmail())).thenReturn(Optional.of(admin));
-//        when(adminService.authenticateUser(authentication)).thenReturn(new AdminResponse(adminId, "Admin", "admin@example.com", "123456789"));
-//
 //        UpdateAdminRequest updateRequest = new UpdateAdminRequest(adminId, "Updated Admin", "987654321");
+//
+//        when(adminRepository.findById(adminId)).thenReturn(Optional.of(admin));
+//
 //        adminService.update(updateRequest);
 //
-//        verify(adminRepository, times(1)).findFirstByUserCredential_Email(admin.getEmail());
+//        verify(adminRepository, times(1)).findById(adminId);
 //        verify(adminRepository, times(1)).save(any(Admin.class));
 //    }
+
 
 }

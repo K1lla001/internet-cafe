@@ -34,7 +34,7 @@ public class ComputerController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<NewComputerResponse>> addComputer(
-            @RequestPart(name = "computer")ComputerRequest request,
+            @RequestPart(name = "computer") ComputerRequest request,
             @RequestPart(name = "image") MultipartFile multipartFileList
             ){
         NewComputerResponse savedComputer = computerService.save(request, multipartFileList);

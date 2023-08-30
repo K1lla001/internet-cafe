@@ -2,6 +2,9 @@ package com.atm.inet.service.impl;
 
 import com.atm.inet.entity.BaseFile;
 import com.atm.inet.service.BaseFileService;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -20,6 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Getter
+@Setter
 @Slf4j
 public class BaseFileServiceImpl implements BaseFileService {
 

@@ -24,18 +24,18 @@ public class AuthController {
     public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody AuthRequest request){
         RegisterResponse registerResponse = authService.registerCustomer(request);
 
-        return ResponseEntity.ok(CommonResponse.<RegisterResponse>builder()
+        return ResponseEntity.status(HttpStatus.CREATED).body((CommonResponse.<RegisterResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Successfully Create Customer!")
                 .data(registerResponse)
-                .build());
+                .build()));
     }
 
     @PostMapping(path = "/register-admin")
     public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmin(@RequestBody AuthRequest request){
         RegisterResponse registerResponse = authService.registerAdmin(request);
 
-        return ResponseEntity.ok(CommonResponse.<RegisterResponse>builder()
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.<RegisterResponse>builder()
                         .statusCode(HttpStatus.CREATED.value())
                         .message("Successfully Create Admin!")
                         .data(registerResponse)
