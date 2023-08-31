@@ -35,6 +35,18 @@ public class TypeController {
         );
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<TypeResponse>> findById(@PathVariable(name = "id") String id) {
+        TypeResponse getAll = typeService.findById(id);
+        return ResponseEntity.ok(
+                CommonResponse.<TypeResponse>builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully get all data")
+                        .data(getAll)
+                        .build()
+        );
+    }
+
     @PutMapping
     public ResponseEntity<?> update(
             @RequestPart(name = "product") TypeRequest request,
