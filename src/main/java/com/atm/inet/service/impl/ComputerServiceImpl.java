@@ -133,15 +133,13 @@ public class ComputerServiceImpl implements ComputerService {
     @Override
     public String deleteById(String id) {
         Computer computer = getComputerById(id);
-
-        if(computer.getType().getComputerImage() != null){
-            computerImageService.deleteById(computer.getType().getComputerImage().getId());
+        if(computer.getCode() != null){
+            computer.setCode(null);
+            computer.setStatus(EStatus.DELETED);
+            computerRepository.save(computer);
+            return id;
         }
-
-        computer.setCode("");
-        computer.setStatus(EStatus.DELETED);
-        computerRepository.save(computer);
-        return id;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Data not found!");
     }
 
     private Computer getComputerById(String id) {
