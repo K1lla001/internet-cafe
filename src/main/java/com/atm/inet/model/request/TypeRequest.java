@@ -17,6 +17,5 @@ public class TypeRequest {
 
     private String id;
     private Long price;
-    private FileResponse image;
 
 }

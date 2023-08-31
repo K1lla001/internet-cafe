@@ -7,9 +7,11 @@ import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.common.PagingResponse;
 import com.atm.inet.model.request.ComputerRequest;
 import com.atm.inet.model.request.ComputerUpdateRequest;
+import com.atm.inet.model.request.NewComputerRequest;
 import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.model.response.NewComputerResponse;
 import com.atm.inet.service.ComputerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -22,34 +24,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/computers")
+@CrossOrigin("*")
 public class ComputerController {
+
+    private final ObjectMapper mapper;
 
     private final ComputerService computerService;
 
     @PostMapping(
+            headers = ("Content-Type=multipart/form-data"),
             consumes = {MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.MULTIPART_FORM_DATA_VALUE}
+                    MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<NewComputerResponse>> addComputer(
-            @RequestPart(name = "computer") ComputerRequest request,
-            @RequestPart(name = "image") MultipartFile multipartFileList
+            @RequestPart(name = "computer") String request,
+            @RequestPart MultipartFile image
             ){
-        NewComputerResponse savedComputer = computerService.save(request, multipartFileList);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                CommonResponse.<NewComputerResponse>builder()
-                        .statusCode(HttpStatus.CREATED.value())
-                        .message("Successfully add data!")
-                        .data(savedComputer)
-                        .build()
-        );
-    }
+
+        log.warn("WARNING FROM CONTROLLER, {},", request);
+        log.warn("WARNING FROM CONTROLLER, {},", image);
+
+        ComputerRequest computerRequest;
+        try {
+            computerRequest = mapper.readValue(request, ComputerRequest.class);
+
+            NewComputerResponse savedComputer = computerService.save(computerRequest, image);
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    CommonResponse.<NewComputerResponse>builder()
+                            .statusCode(HttpStatus.CREATED.value())
+                            .message("Successfully add data!")
+                            .data(savedComputer)
+                            .build()
+            );
+
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Input!");
+        }
+        }
 
     @GetMapping
     public ResponseEntity<?> getAll(

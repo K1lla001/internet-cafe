@@ -5,6 +5,7 @@ import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.request.TypeRequest;
 import com.atm.inet.model.response.TypeResponse;
 import com.atm.inet.service.TypeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ import java.util.List;
 @RequestMapping(path = "/api/v1/types")
 public class TypeController {
 
+    private final ObjectMapper mapper;
     private final TypeService typeService;
 
     @GetMapping
@@ -49,17 +52,18 @@ public class TypeController {
 
     @PutMapping
     public ResponseEntity<?> update(
-            @RequestPart(name = "product") TypeRequest request,
-            @RequestPart(name = "image", required = false) MultipartFile multipartFiles
+            @RequestBody TypeRequest request,
+            @RequestParam(name = "image", required = false) MultipartFile multipartFiles
     ) {
-        TypeResponse updatedType = typeService.update(request, multipartFiles);
-        return ResponseEntity.ok(
-                CommonResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .message("Successfully update type")
-                        .data(updatedType)
-                        .build()
-        );
+            TypeResponse updatedType = typeService.update(request);
+            return ResponseEntity.ok(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .message("Successfully update type")
+                            .data(updatedType)
+                            .build()
+            );
+
     }
 
 

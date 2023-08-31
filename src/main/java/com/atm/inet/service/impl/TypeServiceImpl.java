@@ -67,7 +67,7 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public TypeResponse update(TypeRequest request, MultipartFile multipartFile) {
+    public TypeResponse update(TypeRequest request) {
         Type type = findTypeById(request.getId());
         TypePrice typePrice = type.getTypePrices().stream().filter(TypePrice::getIsActive).findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Price not found!"));
         typePrice.setIsActive(false);
@@ -79,14 +79,7 @@ public class TypeServiceImpl implements TypeService {
 
         type.addTypePrices(prices);
 
-        if(multipartFile.isEmpty()) {
-            log.warn("INFO DARI TYPE SERVICE KALAU GAMBAR EMPTY: {} ", type);
-        }
-
         log.warn("INFO DARI TYPE SERVICE KALAU ADA GAMBAR: {} ", type);
-        ComputerImage computerImage = computerImageService.create(type, multipartFile);
-
-        type.setComputerImage(computerImage);
 
         prices.setType(type);
 

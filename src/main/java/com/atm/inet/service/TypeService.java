@@ -17,7 +17,7 @@ public interface TypeService {
 
     TypeResponse findById(String id);
 
-    TypeResponse update(TypeRequest request, MultipartFile multipartFile);
+    TypeResponse update(TypeRequest request);
 
     Type findTypeById(String id);
 
