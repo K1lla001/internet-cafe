@@ -11,6 +11,7 @@ import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.model.response.NewComputerResponse;
 import com.atm.inet.service.ComputerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +32,10 @@ public class ComputerController {
 
     private final ComputerService computerService;
 
-    @PostMapping
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<NewComputerResponse>> addComputer(
             @RequestPart(name = "computer") ComputerRequest request,
@@ -56,7 +60,7 @@ public class ComputerController {
             @RequestParam(required = false) String processor,
             @RequestParam(required = false) String vga,
             @RequestParam(required = false) String category
-            ){
+    ) {
         ComputerSearch dataSearch = ComputerSearch.builder()
                 .name(name)
                 .code(code)
@@ -87,7 +91,7 @@ public class ComputerController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<ComputerResponse>> getById(@PathVariable String id){
+    public ResponseEntity<CommonResponse<ComputerResponse>> getById(@PathVariable String id) {
         ComputerResponse computer = computerService.getById(id);
         return ResponseEntity.ok(
                 CommonResponse.<ComputerResponse>builder()

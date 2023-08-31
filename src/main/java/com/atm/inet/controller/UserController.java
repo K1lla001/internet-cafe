@@ -33,7 +33,7 @@ public class UserController {
         );
     }
 
-    @PutMapping(path = "/profile-picture")
+    @PutMapping(path = "/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommonResponse<FileResponse>> uploadProfilePicture(@RequestParam(name = "image") MultipartFile multipartFile) {
         FileResponse fileResponse = userService.updateProfilePicture(multipartFile);
         return ResponseEntity.ok(
