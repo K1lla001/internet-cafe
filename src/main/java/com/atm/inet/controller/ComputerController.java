@@ -1,23 +1,18 @@
 package com.atm.inet.controller;
 
-import com.atm.inet.entity.computer.Computer;
-import com.atm.inet.entity.constant.ECategory;
 import com.atm.inet.model.common.CommonResponse;
 import com.atm.inet.model.common.ComputerSearch;
 import com.atm.inet.model.common.PagingResponse;
 import com.atm.inet.model.request.ComputerRequest;
 import com.atm.inet.model.request.ComputerUpdateRequest;
-import com.atm.inet.model.request.NewComputerRequest;
 import com.atm.inet.model.response.ComputerResponse;
 import com.atm.inet.model.response.NewComputerResponse;
 import com.atm.inet.service.ComputerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @Slf4j

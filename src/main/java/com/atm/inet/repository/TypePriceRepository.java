@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface TypePriceRepository extends JpaRepository<TypePrice, String> {
     Optional<TypePrice> findFirstByIsActiveTrue();
 
-    Optional<TypePrice> findByType_Id(String typeId);
+    Optional<TypePrice> findByIsActiveTrueAndType_Id(String typeId);
 }
