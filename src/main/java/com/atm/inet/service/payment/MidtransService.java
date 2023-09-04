@@ -104,7 +104,7 @@ public class MidtransService {
         expiration.put("unit", "minute");
 
         Map<String, Object> callBack = new HashMap<>();
-        callBack.put("finish", "https://0b00-103-78-25-190.ngrok-free.app/home");
+        callBack.put("finish", "https://e3dd-103-78-25-190.ngrok-free.app/home/");
 
         Map<String, Object> transRequest = new HashMap<>();
         transRequest.put("transaction_details", transDetail);

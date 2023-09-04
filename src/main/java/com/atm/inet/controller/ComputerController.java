@@ -68,7 +68,7 @@ public class ComputerController {
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber,
-            @RequestParam(name = "size", defaultValue = "5", required = false) Integer size,
+            @RequestParam(name = "size", defaultValue = "50", required = false) Integer size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String processor,
